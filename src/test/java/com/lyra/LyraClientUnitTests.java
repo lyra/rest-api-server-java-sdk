@@ -1,17 +1,17 @@
 package com.lyra;
 
-import com.lyra.config.LyraRestClientConfiguration;
+import com.lyra.config.LyraClientConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
 import java.util.Properties;
 
-public class RestSdkUnitTests {
+public class LyraClientUnitTests {
 
     @Test
     public void testReadConfiguration() throws Exception {
-        LyraRestClient client = new LyraRestClient();
+        LyraClient client = new LyraClient();
 
         Properties configurationProperties =
                 Whitebox.invokeMethod(client, "readDefaultConfiguration");
@@ -23,24 +23,22 @@ public class RestSdkUnitTests {
 
     @Test
     public void testConfigurationBuilder() throws Exception {
-        LyraRestClientConfiguration configuration = LyraRestClientConfiguration.builder()
+        LyraClientConfiguration configuration = LyraClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
-                .publicKey("testBuilderPublicKey")
-                .hashKey("testBuilderHashKey")
+                .endpointUrl("testEndpointUrl")
                 .proxyHost("testBuilderProxyHost")
                 .proxyPort("testBuilderProxyPort")
-                .endpoint("testBuilderEndpoint")
-                .clientEndpoint("testBuilderClientEndpoint")
+                .connectionTimeout("testConnectionTimeout")
+                .requestTimeout("testRequestTimeout")
                 .build();
 
         Assert.assertEquals("testBuilderUsername", configuration.getUsername());
         Assert.assertEquals("testBuilderPassword", configuration.getPassword());
-        Assert.assertEquals("testBuilderPublicKey", configuration.getPublicKey());
-        Assert.assertEquals("testBuilderHashKey", configuration.getHashKey());
+        Assert.assertEquals("testEndpointUrl", configuration.getEndpointUrl());
         Assert.assertEquals("testBuilderProxyHost", configuration.getProxyHost());
         Assert.assertEquals("testBuilderProxyPort", configuration.getProxyPort());
-        Assert.assertEquals("testBuilderEndpoint", configuration.getEndpoint());
-        Assert.assertEquals("testBuilderClientEndpoint", configuration.getClientEndpoint());
+        Assert.assertEquals("testConnectionTimeout", configuration.getConnectionTimeout());
+        Assert.assertEquals("testRequestTimeout", configuration.getRequestTimeout());
     }
 }
