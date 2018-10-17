@@ -12,6 +12,7 @@ public class LyraClientIntegrationTests {
     public void testPreparePaymentOK() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
+        parameters.put("currency", 978);
 
         LyraClientResponse result = LyraClient.preparePayment(parameters);
 
@@ -26,6 +27,7 @@ public class LyraClientIntegrationTests {
     public void testPreparePaymentBadOption() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 123);
+        parameters.put("currency", 978);
 
         LyraClientResponse result = LyraClient.preparePayment(parameters);
 

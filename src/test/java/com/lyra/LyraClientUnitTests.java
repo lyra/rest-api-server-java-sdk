@@ -3,18 +3,102 @@ package com.lyra;
 import com.lyra.config.LyraClientConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@PrepareForTest(LyraClient.class)
+@RunWith(PowerMockRunner.class)
 public class LyraClientUnitTests {
+    private static final Integer TEST_AMOUNT = 100;
+    private static final Integer TEST_CURRENCY = 100;
+
+    private static final Integer HTTP_OK = 200;
+    private static final Integer HTTP_ERROR = 500;
+
+    private static final String RESPONSE_STATUS_OK = "SUCCESS";
+    private static final String RESPONSE_STATUS_ERROR = "ERROR";
+    private static final String TEST_VERSION = "4.2.0";
+    private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
+    private static final String TEST_ERROR_CODE = "PSP_100";
+
+    @Test(expected = LyraClientException.class)
+    public void testPreparePaymentWrongConfig() {
+        //Empty config
+        Map<String, Object> parameters = new HashMap<>();
+        LyraClient.preparePayment(parameters);
+    }
+
+    @Test(expected = LyraClientException.class)
+    public void testPreparePaymentBadReturnCode() throws Exception {
+        mockPreparePayment(HTTP_ERROR);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("amount", TEST_AMOUNT);
+        parameters.put("currency", TEST_CURRENCY);
+        LyraClient.preparePayment(parameters);
+    }
+
+    @Test
+    public void testPreparePayment() throws Exception {
+        mockPreparePayment(HTTP_OK);
+        PowerMockito.doReturn(String.format("{\"status\":\"%s\",\"answer\":{\"formToken\":\"%s\"}}"
+                ,RESPONSE_STATUS_OK, TEST_FORM_TOKEN))
+                .when(LyraClient.class, "readResponseContent", Mockito.any());
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("amount", TEST_AMOUNT);
+        parameters.put("currency", TEST_CURRENCY);
+        LyraClientResponse response = LyraClient.preparePayment(parameters);
+
+        Assert.assertEquals(RESPONSE_STATUS_OK, response.getStatus());
+    }
+
+    @Test
+    public void testClientResponseOK() {
+        String completeResponseOK = String.format("{\"status\":\"%s\",\"applicationVersion\":\"%s\",\"answer\":{\"formToken\":\"%s\"}}"
+                , RESPONSE_STATUS_OK, TEST_VERSION, TEST_FORM_TOKEN);
+        LyraClientResponse responseOK = LyraClientResponse.fromResponseMessage(completeResponseOK);
+        Assert.assertEquals(RESPONSE_STATUS_OK, responseOK.getStatus());
+        Assert.assertEquals(TEST_VERSION, responseOK.getVersion());
+        Assert.assertEquals(TEST_FORM_TOKEN, responseOK.getFormToken());
+    }
+
+    @Test
+    public void testClientResponseKO() {
+        String completeResponseKO = String.format("{\"status\":\"%s\",\"applicationVersion\":\"%s\",\"answer\":{\"errorCode\":\"%s\"}}"
+                , RESPONSE_STATUS_ERROR, TEST_VERSION, TEST_ERROR_CODE);
+        LyraClientResponse responseOK = LyraClientResponse.fromResponseMessage(completeResponseKO);
+        Assert.assertEquals(RESPONSE_STATUS_ERROR, responseOK.getStatus());
+        Assert.assertEquals(TEST_VERSION, responseOK.getVersion());
+        Assert.assertNull(responseOK.getFormToken());
+        Assert.assertEquals(TEST_ERROR_CODE, responseOK.getErrorCode());
+    }
+
+    @Test(expected = LyraClientException.class)
+    public void testClientResponseNoAnswer() {
+        String completeResponseException = String.format("{\"status\":\"%s\",\"applicationVersion\":\"%s\"}"
+                , RESPONSE_STATUS_OK, TEST_VERSION);
+        LyraClientResponse.fromResponseMessage(completeResponseException);
+    }
+
+    @Test(expected = LyraClientException.class)
+    public void testClientResponseInvalidJSON() {
+        String completeResponseException = String.format("{\"status\":\"%s\",\"applicationVersion\":\"%s\",\"answer\":{\"formToken\":\"%s\"}"
+                , RESPONSE_STATUS_OK, TEST_VERSION, TEST_FORM_TOKEN);
+        LyraClientResponse.fromResponseMessage(completeResponseException);
+    }
 
     @Test
     public void testReadConfiguration() throws Exception {
-        LyraClient client = new LyraClient();
-
         Properties configurationProperties =
                 Whitebox.invokeMethod(LyraClient.class, "readDefaultConfiguration");
 
@@ -24,7 +108,7 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testConfigurationBuilder() throws Exception {
+    public void testConfigurationBuilder() {
         LyraClientConfiguration configuration = LyraClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
@@ -45,10 +129,10 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testParametersOk() throws Exception {
+    public void testParametersOK() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("amount", 100);
-        parameters.put("currency", 978);
+        parameters.put("amount", TEST_AMOUNT);
+        parameters.put("currency", TEST_CURRENCY);
         Assert.assertTrue("Sent parameters should be OK", invokeCheckParameters(parameters));
     }
 
@@ -60,12 +144,12 @@ public class LyraClientUnitTests {
 
         //Only amount
         parameters = new HashMap<>();
-        parameters.put("amount", 100);
+        parameters.put("amount", TEST_AMOUNT);
         Assert.assertFalse("Sent parameters should be OK", invokeCheckParameters(parameters));
 
         //Only currency
         parameters = new HashMap<>();
-        parameters.put("currency", 100);
+        parameters.put("currency", TEST_CURRENCY);
         Assert.assertFalse("Sent parameters should be OK", invokeCheckParameters(parameters));
     }
 
@@ -132,19 +216,29 @@ public class LyraClientUnitTests {
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
-        String wrongUrl =  Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        String wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
 
         resource = "testResource";
-        wrongUrl =  Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
 
         configuration.put("endpointUrl", "test");
-        String rightUrl =  Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        String rightUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertEquals(rightUrl, expected);
+    }
+
+    private void mockPreparePayment(int responseCode) throws Exception {
+        PowerMockito.spy(LyraClient.class);
+        HttpURLConnection mockHttpURLConnection = Mockito.mock(HttpURLConnection.class);
+        PowerMockito.when(mockHttpURLConnection.getResponseCode()).thenReturn(responseCode);
+        PowerMockito.doReturn(mockHttpURLConnection)
+                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any());
+        PowerMockito.doNothing()
+                .when(LyraClient.class, "sendRequestPayload", Mockito.any(), Mockito.any());
     }
 
     private boolean invokeCheckParameters(Map<String, Object> parameters) throws Exception {

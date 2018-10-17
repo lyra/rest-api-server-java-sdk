@@ -91,11 +91,10 @@ public class LyraClient {
             int responseCode = connection.getResponseCode();
 
             if (responseCode == 200) {
-                try (BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    responseMessage = buffer.lines().collect(Collectors.joining("\n"));
-                }
+                responseMessage = readResponseContent(connection);
             } else {
-
+                throw new LyraClientException("HTTP call to Payment Platform was not successful. Response Code: "
+                        + responseCode);
             }
         } catch (IOException ioe) {
             throw new LyraClientException("Exception calling payment platform server", ioe);
@@ -198,6 +197,17 @@ public class LyraClient {
             wr.write(payload);
             wr.flush();
         }
+    }
+
+    /*
+    Read the content from an HTTP response
+     */
+    private static String readResponseContent(HttpURLConnection connection) throws IOException {
+        String responseMessage;
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            responseMessage = buffer.lines().collect(Collectors.joining("\n"));
+        }
+        return responseMessage;
     }
 
     /*
