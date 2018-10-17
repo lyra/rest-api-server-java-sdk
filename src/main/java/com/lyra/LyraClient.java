@@ -31,9 +31,8 @@ import java.util.stream.Collectors;
 public class LyraClient {
 
     protected static final String SDK_VERSION = "V4";
-    private static final String CONFIGURATION_FILE_NAME = "lyra-client-configuration";
-
     protected static final Gson GSON = new Gson();
+    private static final String CONFIGURATION_FILE_NAME = "lyra-client-configuration";
 
     private static String defaultUsername;
     private static String defaultPassword;
@@ -60,7 +59,7 @@ public class LyraClient {
      * Calls the payment platform in order to recover all the payment information details.
      *
      * @param parameters Map that contains the parameters of the payment
-     * @return LyraClientResponse
+     * @return {@link LyraClientResponse} object that contains all the response information
      * @throws LyraClientException exception if error processing the request
      */
     public static LyraClientResponse preparePayment(Map<String, Object> parameters) throws LyraClientException {
@@ -72,27 +71,30 @@ public class LyraClient {
      *
      * @param parameters           Map that contains the parameters of the payment
      * @param requestConfiguration Configuration object that overrides the default configuration for this request
-     * @return
+     * @return {@link LyraClientResponse} object that contains all the response information
      * @throws LyraClientException exception if error processing the request
      */
     public static LyraClientResponse preparePayment(Map<String, Object> parameters, LyraClientConfiguration requestConfiguration) throws LyraClientException {
         String responseMessage = null;
         Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
 
+        //Before proceed, make sure that minimum parameters are present
         if (!checkParameters(parameters)) {
             throw new LyraClientException("Some parameters are missing.");
         }
 
         try {
+            //Call Payment Platform
             HttpURLConnection connection = createConnection("CreatePayment", configuration);
-
             sendRequestPayload(connection, GSON.toJson(parameters));
 
             int responseCode = connection.getResponseCode();
 
+            //There will always be a 200-OK response, even if there is an error.
             if (responseCode == 200) {
                 responseMessage = readResponseContent(connection);
             } else {
+                //Generic server error case (404, 500, etc).
                 throw new LyraClientException("HTTP call to Payment Platform was not successful. Response Code: "
                         + responseCode);
             }
@@ -100,6 +102,7 @@ public class LyraClient {
             throw new LyraClientException("Exception calling payment platform server", ioe);
         }
 
+        //Build response
         return LyraClientResponse.fromResponseMessage(responseMessage);
     }
 
@@ -167,7 +170,7 @@ public class LyraClient {
         HttpURLConnection connection = (proxy != null) ? (HttpURLConnection) urlToConnect.openConnection(proxy)
                 : (HttpURLConnection) urlToConnect.openConnection();
 
-        //add request headers
+        //Add request headers
         connection.setRequestMethod("POST");
         connection.setRequestProperty("User-Agent", "Mobile Client SDK " + SDK_VERSION);
         connection.setRequestProperty("Content-type", "application/json; charset=UTF-8");

@@ -1,5 +1,10 @@
 package com.lyra;
 
+/**
+ * Runtime exception launched in case of error calling the client.
+ *
+ * @author Lyra Network
+ */
 public class LyraClientException extends RuntimeException {
 
     public LyraClientException(String message) {

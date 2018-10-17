@@ -3,6 +3,13 @@ package com.lyra.config;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * This bean class encapsulates client configuration data. <p>
+ *
+ * In order to facilitate object creation it implements a builder pattern.
+ *
+ * @author Lyra Network
+ */
 @Builder
 @Getter
 public class LyraClientConfiguration {
