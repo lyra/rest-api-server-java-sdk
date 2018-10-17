@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Class that encapsulates all response data<p/>
  *
- * This inmutable class can only be instantiated using the method {@link #fromResponseMessage(String)} that
+ * This immutable class can only be instantiated using the method {@link #fromResponseMessage(String)} that
  * build the data using the message retrieved from Payment Platform.
  *
  * @author Lyra Network
