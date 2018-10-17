@@ -1,6 +1,5 @@
 package com.lyra;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 
@@ -56,6 +55,11 @@ public class LyraClientResponse {
 
     public String toJson() {
         return LyraClient.GSON.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return toJson();
     }
 
     private static String generateErrorData(Map<String, String> answer, String error, String extendedErrorData) {
