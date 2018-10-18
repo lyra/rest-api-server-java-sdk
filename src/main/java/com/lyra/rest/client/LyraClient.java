@@ -1,7 +1,6 @@
-package com.lyra;
+package com.lyra.rest.client;
 
 import com.google.gson.Gson;
-import com.lyra.config.LyraClientConfiguration;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -15,7 +14,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * This client component allows to interact with the Payment Platform.<p/>
+ * This client component allows to interact with the Rest API of the Payment Platform.<p/>
  * <p>
  * In order to configure this component, it is necessary to set the properties in a file called
  * lyra-client-configuration.properties. This file must exist in the classpath.<p/>
@@ -23,8 +22,7 @@ import java.util.stream.Collectors;
  * It is possible, anyway, to set an specific configuration using the {@link LyraClientConfiguration} object
  * and its builder.<p/>
  * <p>
- * In case of error, a {@link LyraClientException} exception will be thrown, containing error details and the full stack.
- * This exception extends {@link RuntimeException}, so it is up to developer to decide how and when to catch it.
+ * In case of error, a {@link LyraClientException} non-checked exception will be thrown, containing error details and the full stack.
  *
  * @author Lyra Network
  */
@@ -56,36 +54,33 @@ public class LyraClient {
     }
 
     /**
-     * Calls the payment platform in order to recover all the payment information details.
+     * Calls the payment platform using the REST API.
      *
+     * @param targetResource the resource to target. Use {@link LyraClientResource} enum to help defining this parameter
      * @param parameters Map that contains the parameters of the payment
-     * @return {@link LyraClientResponse} object that contains all the response information
+     * @return {@link String} that contains the full response from API
      * @throws LyraClientException exception if error processing the request
      */
-    public static LyraClientResponse preparePayment(Map<String, Object> parameters) throws LyraClientException {
-        return preparePayment(parameters, LyraClientConfiguration.builder().build());
+    public static String post(String targetResource, Map<String, Object> parameters) throws LyraClientException {
+        return post(targetResource, parameters, LyraClientConfiguration.builder().build());
     }
 
     /**
-     * Calls the payment platform in order to recover all the payment information details.
+     * Calls the payment platform using the REST API
      *
+     * @param targetResource the resource to target. You can use {@link LyraClientResource} enum to help defining this parameter
      * @param parameters           Map that contains the parameters of the payment
      * @param requestConfiguration Configuration object that overrides the default configuration for this request
-     * @return {@link LyraClientResponse} object that contains all the response information
+     * @return {@link String} that contains the full response from API
      * @throws LyraClientException exception if error processing the request
      */
-    public static LyraClientResponse preparePayment(Map<String, Object> parameters, LyraClientConfiguration requestConfiguration) throws LyraClientException {
+    public static String post(String targetResource, Map<String, Object> parameters, LyraClientConfiguration requestConfiguration) throws LyraClientException {
         String responseMessage = null;
         Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
 
-        //Before proceed, make sure that minimum parameters are present
-        if (!checkParameters(parameters)) {
-            throw new LyraClientException("Some parameters are missing.");
-        }
-
         try {
             //Call Payment Platform
-            HttpURLConnection connection = createConnection("CreatePayment", configuration);
+            HttpURLConnection connection = createConnection(targetResource, configuration);
             sendRequestPayload(connection, GSON.toJson(parameters));
 
             int responseCode = connection.getResponseCode();
@@ -102,8 +97,7 @@ public class LyraClient {
             throw new LyraClientException("Exception calling payment platform server", ioe);
         }
 
-        //Build response
-        return LyraClientResponse.fromResponseMessage(responseMessage);
+        return responseMessage;
     }
 
     /*
@@ -148,7 +142,7 @@ public class LyraClient {
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
         String endpoint = configuration.get("endpointUrl");
 
-        return String.format("%s/api-payment/%s/Charge/%s", endpoint, SDK_VERSION, resource);
+        return String.format("%s/api-payment/%s/%s", endpoint, SDK_VERSION, resource);
     }
 
     /*
@@ -184,14 +178,7 @@ public class LyraClient {
     }
 
     /*
-    Verify if all the compulsory parameters are sent
-     */
-    private static boolean checkParameters(Map<String, Object> parameters) {
-        return parameters.containsKey("amount") && parameters.containsKey("currency");
-    }
-
-    /*
-    Send an http request with the provided payload
+    Send an HTTP request with the provided payload
      */
     private static void sendRequestPayload(HttpURLConnection connection, String payload) throws IOException {
         // Send post request

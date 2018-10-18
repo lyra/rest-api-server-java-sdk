@@ -1,4 +1,4 @@
-package com.lyra.config;
+package com.lyra.rest.client;
 
 import lombok.Builder;
 import lombok.Getter;

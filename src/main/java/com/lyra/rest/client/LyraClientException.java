@@ -1,4 +1,4 @@
-package com.lyra;
+package com.lyra.rest.client;
 
 /**
  * Runtime exception launched in case of error calling the client.
