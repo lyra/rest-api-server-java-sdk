@@ -31,7 +31,7 @@ public class LyraClientUnitTests {
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
     @Test(expected = LyraClientException.class)
-    public void testPreparePaymentBadReturnCode() throws Exception {
+    public void Should_ThrowLyraClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
         mockPreparePayment(HTTP_ERROR);
 
         Map<String, Object> parameters = new HashMap<>();
@@ -41,7 +41,7 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testPreparePayment() throws Exception {
+    public void Should_ReturnOk_When_CallPreparePaymentWithGoodParams() throws Exception {
         mockPreparePayment(HTTP_OK);
         PowerMockito.doReturn(String.format("{\"status\":\"%s\",\"answer\":{\"formToken\":\"%s\"}}"
                 , RESPONSE_STATUS_SUCCESS, TEST_FORM_TOKEN))
@@ -52,13 +52,12 @@ public class LyraClientUnitTests {
         parameters.put("currency", TEST_CURRENCY);
         String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.getValue(), parameters);
 
-
         Map jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
         Assert.assertEquals(RESPONSE_STATUS_SUCCESS, jsonResponse.get("status"));
     }
 
     @Test
-    public void testReadConfiguration() throws Exception {
+    public void Should_ReadCondigurationFromFile_When_CallReadConfiguration() throws Exception {
         Properties configurationProperties =
                 Whitebox.invokeMethod(LyraClient.class, "readDefaultConfiguration");
 
@@ -68,7 +67,7 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testConfigurationBuilder() {
+    public void Should_LoadConfiguration_When_UsingConfigurationBuilder() {
         LyraClientConfiguration configuration = LyraClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
@@ -89,7 +88,7 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testParameters() throws Exception {
+    public void Should_OverrideDefautConfiguration_WithConfigurationBuilder() throws Exception {
         String expectedUsername = "testUsername";
         String expectedPassword = "testPassword";
         String expectedProxyHost = "testProxyHost";
@@ -146,7 +145,7 @@ public class LyraClientUnitTests {
     }
 
     @Test
-    public void testGenerateChargeUrl() throws Exception {
+    public void Should_GenerateUrl_WithGenerateChargeUrlMethod() throws Exception {
         String expected = "test/api-payment/" + LyraClient.SDK_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";

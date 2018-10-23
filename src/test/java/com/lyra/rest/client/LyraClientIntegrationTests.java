@@ -14,7 +14,7 @@ public class LyraClientIntegrationTests {
     private static final String RESPONSE_STATUS_ERROR = "ERROR";
 
     @Test
-    public void testPreparePaymentOK() {
+    public void Should_ReturnOk_When_CallPreparePayment() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
         parameters.put("currency", 978);
@@ -33,7 +33,7 @@ public class LyraClientIntegrationTests {
     }
 
     @Test
-    public void testPreparePaymentBadOption() {
+    public void Should_ReturnError_When_CallPreparePaymentBadOption() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 123);
         parameters.put("currency", 978);
