@@ -19,7 +19,7 @@ public class LyraClientIntegrationTests {
         parameters.put("amount", 100);
         parameters.put("currency", 978);
 
-        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.getValue(), parameters);
+        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 
         Map jsonResult = LyraClient.GSON.fromJson(result, Map.class);
 
@@ -38,7 +38,7 @@ public class LyraClientIntegrationTests {
         parameters.put("amount", 123);
         parameters.put("currency", 978);
 
-        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.getValue(), parameters);
+        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 
         Map jsonResult = LyraClient.GSON.fromJson(result, Map.class);
 

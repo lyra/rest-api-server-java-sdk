@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class LyraClient {
 
-    protected static final String SDK_VERSION = "V4";
+    protected static final String REST_API_VERSION = "V4";
     protected static final Gson GSON = new Gson();
     private static final String CONFIGURATION_FILE_NAME = "lyra-client-configuration";
 
@@ -142,7 +142,7 @@ public class LyraClient {
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
         String endpoint = configuration.get("endpointUrl");
 
-        return String.format("%s/api-payment/%s/%s", endpoint, SDK_VERSION, resource);
+        return String.format("%s/api-payment/%s/%s", endpoint, REST_API_VERSION, resource);
     }
 
     /*
@@ -166,7 +166,7 @@ public class LyraClient {
 
         //Add request headers
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("User-Agent", "Mobile Client SDK " + SDK_VERSION);
+        connection.setRequestProperty("User-Agent", "Mobile Client SDK " + REST_API_VERSION);
         connection.setRequestProperty("Content-type", "application/json; charset=UTF-8");
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));

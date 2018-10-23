@@ -1,9 +1,5 @@
 package com.lyra.rest.client;
 
-import com.lyra.rest.client.LyraClient;
-import com.lyra.rest.client.LyraClientConfiguration;
-import com.lyra.rest.client.LyraClientException;
-import com.lyra.rest.client.LyraClientResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +33,7 @@ public class LyraClientUnitTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
-        LyraClient.post(LyraClientResource.CREATE_PAYMENT.getValue(), parameters);
+        LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
     }
 
     @Test
@@ -50,7 +46,7 @@ public class LyraClientUnitTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
-        String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.getValue(), parameters);
+        String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 
         Map jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
         Assert.assertEquals(RESPONSE_STATUS_SUCCESS, jsonResponse.get("status"));
@@ -146,7 +142,7 @@ public class LyraClientUnitTests {
 
     @Test
     public void Should_GenerateUrl_WithGenerateChargeUrlMethod() throws Exception {
-        String expected = "test/api-payment/" + LyraClient.SDK_VERSION + "/Charge/testResource";
+        String expected = "test/api-payment/" + LyraClient.REST_API_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
@@ -154,7 +150,7 @@ public class LyraClientUnitTests {
                 resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
 
-        resource = "testResource";
+        resource = "Charge/testResource";
         wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
