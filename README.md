@@ -20,7 +20,7 @@ You can also directly download the JAR from this path and add it to your classpa
 In this last case, you should make sure that you add also [Gson 2.8.5](https://github.com/google/gson) to your project 
 classpath. 
 
-## Usage
+## Basic Usage
 
 The first thing you have to do is to configure your client.
 
@@ -42,27 +42,6 @@ and set the right values:
     connectionTimeout=45000
     requestTimeout=45000
     
-#### Override configuration programmatically
-
-You can also set a configuration when performing the call to the _post_ method.
-
-In order to do so, you have to create a LyraClientConfiguration object that will override the default configuration.
-
-This object implements a builder pattern that makes really easy to instantiate it: 
-
-```java
-    LyraClientConfiguration configuration = LyraClientConfiguration.builder()
-                .username("usernameToOverride")
-                .password("passwordToOverride")
-                .endpointUrl("endpointUrlToOverride")
-                .build();
-```
-
-Please note that: 
-
-* You can set a default configuration but file and just override specific values by _LyraClientConfigutation_ object.
-* The  LyraClientConfiguration will only change the configuration for the request. If you make another call 
-and you want to use the same configuration, you will have to pass again the object.
 
 ### Perform an API call
 
@@ -92,11 +71,35 @@ This is an usage example:
     String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 ```
 
-And, as stated before, it is also possible to override the configuration for the request very easily. 
+## Advanced usage
+
+#### Override configuration programmatically
+
+You can easily override the default configuration when performing the call to the _post_ method.
+This can be very useful, for example, if you need to share this same SDK library with different client applications. 
+
+In order to do so, you have to create a LyraClientConfiguration object.
+This object implements a builder pattern that makes really easy to instantiate it: 
+
+```java
+    LyraClientConfiguration configuration = LyraClientConfiguration.builder()
+                .username("usernameToOverride")
+                .password("passwordToOverride")
+                .endpointUrl("endpointUrlToOverride")
+                .build();
+```
+
+Please note that: 
+
+* You can set a default configuration but file and just override specific values by _LyraClientConfigutation_ object.
+* The  LyraClientConfiguration will only change the configuration for the request. If you make another call 
+and you want to use the same configuration, you will have to pass again the object.
+
+For example, if you need to perform a post call with a different username/password: 
 
 ```java
     String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, 
-            LyraClientConfiguration.builder().password("anotherPassword").build);
+            LyraClientConfiguration.builder().username("anotherUsername").password("anotherPassword").build);
 ```
 
 ## Download and compile
