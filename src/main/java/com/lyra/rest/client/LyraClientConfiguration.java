@@ -13,6 +13,14 @@ import lombok.Getter;
 @Builder
 @Getter
 public class LyraClientConfiguration {
+    public static final String CONFIGURATION_KEY_USERNAME = "username";
+    public static final String CONFIGURATION_KEY_PASSWORD = "password";
+    public static final String CONFIGURATION_KEY_PROXY_HOST = "proxyHost";
+    public static final String CONFIGURATION_KEY_PROXY_PORT = "proxyPort";
+    public static final String CONFIGURATION_KEY_ENDPOINT_URL = "endpointUrl";
+    public static final String CONFIGURATION_KEY_CONNECTION_TIMEOUT = "connectionTimeout";
+    public static final String CONFIGURATION_KEY_REQUEST_TIMEOUT = "requestTimeout";
+
     private String username;
     private String password;
     private String proxyHost;

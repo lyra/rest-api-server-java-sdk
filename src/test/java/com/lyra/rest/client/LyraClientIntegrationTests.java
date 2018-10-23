@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LyraClientIntegrationTests {
+    private static final String TEST_USERNAME = "91335531";
+    private static final String TEST_PWD = "testpassword_8Z3eXc7GCXb51kskD3sKCMjnJCyURmUneRwwp8KW8nyu0";
+    private static final String TEST_ENDPOINT = "http://192.168.216.27:5556";
 
     private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
     private static final String RESPONSE_STATUS_ERROR = "ERROR";
@@ -19,7 +22,7 @@ public class LyraClientIntegrationTests {
         parameters.put("amount", 100);
         parameters.put("currency", 978);
 
-        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
+        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
 
         Map jsonResult = LyraClient.GSON.fromJson(result, Map.class);
 
@@ -38,7 +41,7 @@ public class LyraClientIntegrationTests {
         parameters.put("amount", 123);
         parameters.put("currency", 978);
 
-        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
+        String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
 
         Map jsonResult = LyraClient.GSON.fromJson(result, Map.class);
 
@@ -49,5 +52,13 @@ public class LyraClientIntegrationTests {
         Assert.assertNull(answer.get("formToken"));
         Assert.assertNotNull(answer.get("errorCode"));
         Assert.assertNotNull(answer.get("errorMessage"));
+    }
+
+    private LyraClientConfiguration prepareConfiguration() {
+        return LyraClientConfiguration.builder()
+                .username(TEST_USERNAME)
+                .password(TEST_PWD)
+                .endpointUrl(TEST_ENDPOINT)
+                .build();
     }
 }
