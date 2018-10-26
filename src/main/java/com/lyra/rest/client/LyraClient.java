@@ -208,6 +208,6 @@ public class LyraClient {
      */
     private static String generateAuthorizationToken(Map<String, String> configuration) throws UnsupportedEncodingException {
         return Base64.getEncoder().encodeToString(
-                (configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME)).getBytes(ENCODING));
+                (configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
     }
 }
