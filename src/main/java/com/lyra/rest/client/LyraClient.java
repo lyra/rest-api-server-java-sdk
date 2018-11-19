@@ -93,8 +93,8 @@ public class LyraClient {
                 responseMessage = readResponseContent(connection);
             } else {
                 //Generic server error case (404, 500, etc).
-                throw new LyraClientException("HTTP call to Payment Platform was not successful. Response Code: "
-                        + responseCode);
+                throw new LyraClientException("HTTP call to Payment Platform was not successful.", responseCode,
+                        readResponseContent(connection));
             }
         } catch (IOException ioe) {
             throw new LyraClientException("Exception calling payment platform server", ioe);
@@ -155,12 +155,14 @@ public class LyraClient {
         URL urlToConnect = new URL(generateChargeUrl(resource, configuration));
 
         //Set proxy if necessary
-        String proxyServer = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
-        String proxyPort = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
-
         Proxy proxy = null;
-        if ((proxyServer != null && !proxyServer.isEmpty()) && (proxyPort != null && !proxyPort.isEmpty())) {
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyServer, Integer.parseInt(proxyPort)));
+        if (couldUseProxy(urlToConnect.getHost())) {
+            String proxyServer = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
+            String proxyPort = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
+
+            if ((proxyServer != null && !proxyServer.isEmpty()) && (proxyPort != null && !proxyPort.isEmpty())) {
+                proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyServer, Integer.parseInt(proxyPort)));
+            }
         }
 
         //Create connection
@@ -174,8 +176,16 @@ public class LyraClient {
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));
 
-        connection.setConnectTimeout(Integer.valueOf(configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT)));
-        connection.setReadTimeout(Integer.valueOf(configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT)));
+        //Set timeouts if necessary
+        String connectionTimeout = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
+        String requestTimeout = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
+
+        if (connectionTimeout != null && !connectionTimeout.isEmpty()) {
+            connection.setConnectTimeout(Integer.valueOf(connectionTimeout));
+        }
+        if (requestTimeout != null && !requestTimeout.isEmpty()) {
+            connection.setReadTimeout(Integer.valueOf(requestTimeout));
+        }
 
         return connection;
     }
@@ -209,5 +219,9 @@ public class LyraClient {
     private static String generateAuthorizationToken(Map<String, String> configuration) throws UnsupportedEncodingException {
         return Base64.getEncoder().encodeToString(
                 (configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
+    }
+
+    private static boolean couldUseProxy(String proxyHost) {
+        return !(proxyHost == null) && !proxyHost.equals("localhost") && !proxyHost.equals("127.0.0.1");
     }
 }

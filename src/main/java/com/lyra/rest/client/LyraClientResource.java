@@ -8,7 +8,8 @@ package com.lyra.rest.client;
  * @author Lyra Network
  */
 public enum LyraClientResource {
-    CREATE_PAYMENT("Charge/CreatePayment");
+    CREATE_PAYMENT("Charge/CreatePayment"),
+    SDK_TEST("Charge/SDKTest");
 
     private String value;
 
