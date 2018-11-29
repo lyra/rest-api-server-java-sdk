@@ -17,7 +17,6 @@ public class LyraClientConfiguration {
     public static final String CONFIGURATION_KEY_PASSWORD = "password";
     public static final String CONFIGURATION_KEY_PROXY_HOST = "proxyHost";
     public static final String CONFIGURATION_KEY_PROXY_PORT = "proxyPort";
-    public static final String CONFIGURATION_KEY_ENDPOINT_URL = "endpointUrl";
     public static final String CONFIGURATION_KEY_CONNECTION_TIMEOUT = "connectionTimeout";
     public static final String CONFIGURATION_KEY_REQUEST_TIMEOUT = "requestTimeout";
 
@@ -25,7 +24,6 @@ public class LyraClientConfiguration {
     private String password;
     private String proxyHost;
     private String proxyPort;
-    private String endpointUrl;
     private String connectionTimeout;
     private String requestTimeout;
 }

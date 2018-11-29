@@ -11,7 +11,7 @@ import java.util.Map;
 public class LyraClientIntegrationTests {
     private static final String TEST_USERNAME = "91335531";
     private static final String TEST_PWD = "testpassword_8Z3eXc7GCXb51kskD3sKCMjnJCyURmUneRwwp8KW8nyu0";
-    private static final String TEST_ENDPOINT = "http://192.168.216.27:5556";
+    private static final String TEST_DOMAIN = "http://192.168.216.27:5556";
 
     private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
     private static final String RESPONSE_STATUS_ERROR = "ERROR";
@@ -21,6 +21,7 @@ public class LyraClientIntegrationTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
         parameters.put("currency", 978);
+        parameters.put("domain", TEST_DOMAIN);
 
         String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
 
@@ -40,6 +41,7 @@ public class LyraClientIntegrationTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 123);
         parameters.put("currency", 978);
+        parameters.put("domain", TEST_DOMAIN);
 
         String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
 
@@ -58,7 +60,6 @@ public class LyraClientIntegrationTests {
         return LyraClientConfiguration.builder()
                 .username(TEST_USERNAME)
                 .password(TEST_PWD)
-                .endpointUrl(TEST_ENDPOINT)
                 .build();
     }
 }
