@@ -83,7 +83,7 @@ public class LyraClient {
         //Verify that domain has been sent
         String domain = (String)parameters.get("domain");
         if (domain == null || domain.isEmpty()) {
-            throw new LyraClientException("No domain endpoint provided. Please check your payload data");
+            throw new LyraClientException("No domain URL provided. Please check your payload data");
         }
 
         try {
