@@ -34,7 +34,6 @@ and set the right values:
     #Merchant account parameters
     username=<your shopId here>
     password=<your Rest API password>
-    endpointUrl=<your payment platform URL. Ex: https://secure.payzen.eu>
 
     #Connection parameters
     proxyHost=<only if needed>
@@ -85,7 +84,6 @@ This object implements a builder pattern that makes really easy to instantiate i
     LyraClientConfiguration configuration = LyraClientConfiguration.builder()
                 .username("usernameToOverride")
                 .password("passwordToOverride")
-                .endpointUrl("endpointUrlToOverride")
                 .build();
 ```
 
