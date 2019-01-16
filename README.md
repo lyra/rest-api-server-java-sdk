@@ -34,6 +34,7 @@ and set the right values:
     #Merchant account parameters
     username=<your shopId here>
     password=<your Rest API password>
+    endpointDomain=<your endpoint domain URL>
 
     #Connection parameters
     proxyHost=<only if needed>

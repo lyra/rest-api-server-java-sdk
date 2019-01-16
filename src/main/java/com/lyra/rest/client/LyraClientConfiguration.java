@@ -15,6 +15,7 @@ import lombok.Getter;
 public class LyraClientConfiguration {
     public static final String CONFIGURATION_KEY_USERNAME = "username";
     public static final String CONFIGURATION_KEY_PASSWORD = "password";
+    public static final String CONFIGURATION_KEY_ENDPOINT_DOMAIN = "endpointDomain";
     public static final String CONFIGURATION_KEY_PROXY_HOST = "proxyHost";
     public static final String CONFIGURATION_KEY_PROXY_PORT = "proxyPort";
     public static final String CONFIGURATION_KEY_CONNECTION_TIMEOUT = "connectionTimeout";
@@ -22,6 +23,7 @@ public class LyraClientConfiguration {
 
     private String username;
     private String password;
+    private String endpointDomain;
     private String proxyHost;
     private String proxyPort;
     private String connectionTimeout;
