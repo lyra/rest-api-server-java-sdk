@@ -38,6 +38,7 @@ public class LyraClient {
 
     private static String defaultUsername;
     private static String defaultPassword;
+    private static String defaultEndpointDomain;
     private static String defaultProxyHost;
     private static String defaultProxyPort;
     private static String defaultConnectionTimeout;
@@ -49,6 +50,7 @@ public class LyraClient {
 
         defaultUsername = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME);
         defaultPassword = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD);
+        defaultEndpointDomain = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN);
         defaultProxyHost = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
         defaultProxyPort = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
         defaultConnectionTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
@@ -80,15 +82,9 @@ public class LyraClient {
         String responseMessage = null;
         Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
 
-        //Verify that domain has been sent
-        String domain = (String)parameters.get("domain");
-        if (domain == null || domain.isEmpty()) {
-            throw new LyraClientException("No domain endpoint provided. Please check your payload data");
-        }
-
         try {
             //Call Payment Platform
-            HttpURLConnection connection = createConnection(domain, targetResource, configuration);
+            HttpURLConnection connection = createConnection(targetResource, configuration);
             sendRequestPayload(connection, GSON.toJson(parameters));
 
             int responseCode = connection.getResponseCode();
@@ -120,6 +116,7 @@ public class LyraClient {
         Map<String, String> finalConfiguration = new HashMap<>();
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
+        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getProxyHost() : defaultEndpointDomain);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
@@ -164,15 +161,16 @@ public class LyraClient {
     /*
     Generates the Url to call Rest API
      */
-    private static String generateChargeUrl(String domain, String resource, Map<String, String> configuration) {
-        return String.format("%s/api-payment/%s/%s", domain, REST_API_VERSION, resource);
+    private static String generateChargeUrl(String resource, Map<String, String> configuration) {
+        return String.format("%s/api-payment/%s/%s", LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN,
+                LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, REST_API_VERSION, resource);
     }
 
     /*
     Creates the connection used to make a JSON based REST call
      */
-    private static HttpURLConnection createConnection(String domain, String resource, Map<String, String> configuration) throws IOException {
-        URL urlToConnect = new URL(generateChargeUrl(domain, resource, configuration));
+    private static HttpURLConnection createConnection(String resource, Map<String, String> configuration) throws IOException {
+        URL urlToConnect = new URL(generateChargeUrl(resource, configuration));
 
         //Set proxy if necessary
         Proxy proxy = null;
