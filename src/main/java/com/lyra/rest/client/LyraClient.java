@@ -116,7 +116,7 @@ public class LyraClient {
         Map<String, String> finalConfiguration = new HashMap<>();
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getProxyHost() : defaultEndpointDomain);
+        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getEndpointDomain() : defaultEndpointDomain);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
@@ -162,8 +162,8 @@ public class LyraClient {
     Generates the Url to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
-        return String.format("%s/api-payment/%s/%s", LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN,
-                LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, REST_API_VERSION, resource);
+        return String.format("%s/api-payment/%s/%s", configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN),
+                REST_API_VERSION, resource);
     }
 
     /*
