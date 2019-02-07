@@ -126,7 +126,7 @@ public class LyraClient {
      * @return true if the integrity of the answer is valid
      */
     public static boolean verifyAnswer(Map<String, Object> paymentAnswer, LyraClientConfiguration requestConfiguration) {
-        String answer = (GSON.toJson(paymentAnswer.get("kr-answer")));
+        String answer = (String)paymentAnswer.get("kr-answer");
         String hashAlgorithm = (String) paymentAnswer.get("kr-hash-algorithm");
         String answerHash = (String) paymentAnswer.get("kr-hash");
 
