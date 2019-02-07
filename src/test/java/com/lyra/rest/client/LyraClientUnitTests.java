@@ -159,6 +159,16 @@ public class LyraClientUnitTests {
         Assert.assertEquals(rightUrl, expected);
     }
 
+    @Test(expected = LyraClientException.class)
+    public void Should_ThrowLyraException_When_AlgorithmIsNotSupported() throws Exception {
+        Map<String, Object> answer = new HashMap<>();
+        answer.put("kr-answer", "The quick brown fox jumps over the lazy dog");
+        answer.put("kr-hash-algorithm", "sha1");
+        answer.put("kr-hash", "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+
+        LyraClient.verifyAnswer(answer);
+    }
+
     private void mockPreparePayment(int responseCode) throws Exception {
         PowerMockito.spy(LyraClient.class);
         HttpURLConnection mockHttpURLConnection = Mockito.mock(HttpURLConnection.class);
