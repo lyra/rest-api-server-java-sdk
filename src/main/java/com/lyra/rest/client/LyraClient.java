@@ -43,6 +43,7 @@ public class LyraClient {
     private static String defaultProxyPort;
     private static String defaultConnectionTimeout;
     private static String defaultRequestTimeout;
+    private static String defaultHashKey;
 
     //Static initialization of default properties
     static {
@@ -55,6 +56,7 @@ public class LyraClient {
         defaultProxyPort = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
         defaultConnectionTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
         defaultRequestTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
+        defaultHashKey = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY);
     }
 
     /**
@@ -104,6 +106,40 @@ public class LyraClient {
         return responseMessage;
     }
 
+    /**
+     * Checks the integrity of the answer. To perform this verification it compares the provided hash with
+     * the one generated with the selected algorithm
+     *
+     * @param paymentAnswer map that contains the answer data
+     * @return true if the integrity of the answer is valid
+     */
+    public static boolean verifyAnswer(Map<String, Object> paymentAnswer) {
+        return verifyAnswer(paymentAnswer, LyraClientConfiguration.builder().build());
+    }
+
+    /**
+     * Checks the integrity of the answer. To perform this verification it compares the provided hash with
+     * the one generated with the selected algorithm
+     *
+     * @param paymentAnswer        map that contains the answer data
+     * @param requestConfiguration configuration object that overrides the default configuration for this request
+     * @return true if the integrity of the answer is valid
+     */
+    public static boolean verifyAnswer(Map<String, Object> paymentAnswer, LyraClientConfiguration requestConfiguration) {
+        String answer = (String)paymentAnswer.get("kr-answer");
+        String hashAlgorithm = (String) paymentAnswer.get("kr-hash-algorithm");
+        String answerHash = (String) paymentAnswer.get("kr-hash");
+
+        if (!LyraClientCryptUtil.isAlgorithmSupported(hashAlgorithm)) {
+            throw new LyraClientException("Signature algorithm not supported. Make sure you are using the last version of this SDK");
+        }
+
+        //Get configuration in order to retrieve the key to use
+        Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
+
+        return answerHash.equals(LyraClientCryptUtil.calculateHash(answer, configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY), hashAlgorithm));
+    }
+
     /*
     This method calculates the configuration to use. It takes the default one and overrides it with the configuration
     passed as parameter
@@ -121,6 +157,7 @@ public class LyraClient {
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
         finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT, requestConfiguration.getRequestTimeout() != null ? requestConfiguration.getRequestTimeout() : defaultRequestTimeout);
+        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY, requestConfiguration.getHashKey() != null ? requestConfiguration.getHashKey() : defaultHashKey);
 
         return finalConfiguration;
     }
@@ -137,7 +174,7 @@ public class LyraClient {
 
         //Override with configuration defined by application
         appConfigurationProperties.forEach((k, v) -> {
-            finalConfigurationProperties.setProperty((String)k, (String)v);
+            finalConfigurationProperties.setProperty((String) k, (String) v);
         });
 
         return finalConfigurationProperties;
@@ -145,7 +182,7 @@ public class LyraClient {
 
     //Read configuration file using classloader
     private static Properties readConfigurationFile(String configurationFilename) {
-        Properties props =  new Properties();
+        Properties props = new Properties();
         try (InputStream input = LyraClient.class.getClassLoader()
                 .getResourceAsStream(configurationFilename + ".properties")) {
             if (input != null) {
@@ -244,4 +281,5 @@ public class LyraClient {
     private static boolean couldUseProxy(String proxyHost) {
         return !(proxyHost == null) && !proxyHost.equals("localhost") && !proxyHost.equals("127.0.0.1");
     }
+
 }
