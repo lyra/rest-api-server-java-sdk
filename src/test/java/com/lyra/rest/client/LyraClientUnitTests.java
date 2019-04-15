@@ -26,6 +26,8 @@ public class LyraClientUnitTests {
     private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
+    private static final String TEST_DOMAIN = "http://domain.com";
+
     @Test(expected = LyraClientException.class)
     public void Should_ThrowLyraClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
         mockPreparePayment(HTTP_ERROR);
@@ -33,6 +35,7 @@ public class LyraClientUnitTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
+        parameters.put("domain", TEST_DOMAIN);
         LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
     }
 
@@ -46,6 +49,7 @@ public class LyraClientUnitTests {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
+        parameters.put("domain", TEST_DOMAIN);
         String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 
         Map jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
@@ -67,7 +71,6 @@ public class LyraClientUnitTests {
         LyraClientConfiguration configuration = LyraClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
-                .endpointUrl("testEndpointUrl")
                 .proxyHost("testBuilderProxyHost")
                 .proxyPort("testBuilderProxyPort")
                 .connectionTimeout("testConnectionTimeout")
@@ -76,7 +79,6 @@ public class LyraClientUnitTests {
 
         Assert.assertEquals("testBuilderUsername", configuration.getUsername());
         Assert.assertEquals("testBuilderPassword", configuration.getPassword());
-        Assert.assertEquals("testEndpointUrl", configuration.getEndpointUrl());
         Assert.assertEquals("testBuilderProxyHost", configuration.getProxyHost());
         Assert.assertEquals("testBuilderProxyPort", configuration.getProxyPort());
         Assert.assertEquals("testConnectionTimeout", configuration.getConnectionTimeout());
@@ -89,7 +91,6 @@ public class LyraClientUnitTests {
         String expectedPassword = "testPassword";
         String expectedProxyHost = "testProxyHost";
         String expectedProxyPort = "testProxyPort";
-        String expectedEndpointUrl = "testEndpointUrl";
         String expectedConnectionTimeout = "testConnectionTimeout";
         String expectedRequestTimeout = "testRequestTimeout";
         Properties defaultConfigurationProperties =
@@ -102,14 +103,12 @@ public class LyraClientUnitTests {
         Assert.assertNotEquals(expectedPassword, finalConfiguration.get("password"));
         Assert.assertNotEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
         Assert.assertNotEquals(expectedProxyPort, finalConfiguration.get("proxyPort"));
-        Assert.assertNotEquals(expectedEndpointUrl, finalConfiguration.get("endpointUrl"));
         Assert.assertNotEquals(expectedConnectionTimeout, finalConfiguration.get("connectionTimeout"));
         Assert.assertNotEquals(expectedRequestTimeout, finalConfiguration.get("requestTimeout"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("username"), finalConfiguration.get("username"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("password"), finalConfiguration.get("password"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("proxyHost"), finalConfiguration.get("proxyHost"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("proxyPort"), finalConfiguration.get("proxyPort"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("endpointUrl"), finalConfiguration.get("endpointUrl"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("connectionTimeout"), finalConfiguration.get("connectionTimeout"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("requestTimeout"), finalConfiguration.get("requestTimeout"));
 
@@ -118,7 +117,6 @@ public class LyraClientUnitTests {
                 .password(expectedPassword)
                 .proxyHost(expectedProxyHost)
                 .proxyPort(expectedProxyPort)
-                .endpointUrl(expectedEndpointUrl)
                 .connectionTimeout(expectedConnectionTimeout)
                 .requestTimeout(expectedRequestTimeout)
                 .build();
@@ -128,14 +126,12 @@ public class LyraClientUnitTests {
         Assert.assertEquals(expectedPassword, finalConfiguration.get("password"));
         Assert.assertEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
         Assert.assertEquals(expectedProxyPort, finalConfiguration.get("proxyPort"));
-        Assert.assertEquals(expectedEndpointUrl, finalConfiguration.get("endpointUrl"));
         Assert.assertEquals(expectedConnectionTimeout, finalConfiguration.get("connectionTimeout"));
         Assert.assertEquals(expectedRequestTimeout, finalConfiguration.get("requestTimeout"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("username"), finalConfiguration.get("username"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("password"), finalConfiguration.get("password"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("proxyHost"), finalConfiguration.get("proxyHost"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("proxyPort"), finalConfiguration.get("proxyPort"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("endpointUrl"), finalConfiguration.get("endpointUrl"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("connectionTimeout"), finalConfiguration.get("connectionTimeout"));
         Assert.assertNotEquals(defaultConfigurationProperties.getProperty("requestTimeout"), finalConfiguration.get("requestTimeout"));
     }
@@ -145,20 +141,32 @@ public class LyraClientUnitTests {
         String expected = "test/api-payment/" + LyraClient.REST_API_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
+        String domain = "";
 
+        domain = "toto";
         String wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                resource, configuration);
+                domain, resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
 
         resource = "Charge/testResource";
         wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                resource, configuration);
+                domain, resource, configuration);
         Assert.assertNotEquals(wrongUrl, expected);
 
-        configuration.put("endpointUrl", "test");
+        domain = "test";
         String rightUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                resource, configuration);
+                domain, resource, configuration);
         Assert.assertEquals(rightUrl, expected);
+    }
+
+    @Test(expected = LyraClientException.class)
+    public void Should_ThrowLyraException_When_AlgorithmIsNotSupported() throws Exception {
+        Map<String, Object> answer = new HashMap<>();
+        answer.put("kr-answer", "The quick brown fox jumps over the lazy dog");
+        answer.put("kr-hash-algorithm", "sha1");
+        answer.put("kr-hash", "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+
+        LyraClient.verifyAnswer(answer);
     }
 
     private void mockPreparePayment(int responseCode) throws Exception {
@@ -166,7 +174,7 @@ public class LyraClientUnitTests {
         HttpURLConnection mockHttpURLConnection = Mockito.mock(HttpURLConnection.class);
         PowerMockito.when(mockHttpURLConnection.getResponseCode()).thenReturn(responseCode);
         PowerMockito.doReturn(mockHttpURLConnection)
-                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any());
+                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any(), Mockito.any());
         PowerMockito.doNothing()
                 .when(LyraClient.class, "sendRequestPayload", Mockito.any(), Mockito.any());
     }

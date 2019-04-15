@@ -6,7 +6,7 @@
 
     <groupId>com.lyra</groupId>
     <artifactId>server-rest-sdk</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <distributionManagement>
         <!-- Publish snapshots here -->
