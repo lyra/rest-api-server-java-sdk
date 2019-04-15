@@ -93,11 +93,11 @@ public class LyraClient {
 
             //There will always be a 200-OK response, even if there is an error.
             if (responseCode == HTTP_RESPONSE_OK) {
-                responseMessage = readResponseContent(connection);
+                responseMessage = readResponseContent(connection.getInputStream());
             } else {
+            	String errorMsg = readResponseContent(connection.getErrorStream());
                 //Generic server error case (404, 500, etc).
-                throw new LyraClientException("HTTP call to Payment Platform was not successful.", responseCode,
-                        readResponseContent(connection));
+                throw new LyraClientException("HTTP call to Payment Platform was not successful.", responseCode, errorMsg);
             }
         } catch (IOException ioe) {
             throw new LyraClientException("Exception calling payment platform server", ioe);

@@ -18,6 +18,8 @@ public class LyraClientException extends RuntimeException {
 
     public LyraClientException(String message, int responseCode, String responseMessage) {
         super(message);
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
     }
 
     public LyraClientException(String message, Throwable cause) {
