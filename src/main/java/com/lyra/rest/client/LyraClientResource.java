@@ -1,7 +1,8 @@
 package com.lyra.rest.client;
 
 /**
- * Enum that contains the different resources from Rest API that can be called<p/>
+ * <p>
+ * Enum that contains the different resources from Rest API that can be called</p>
  *
  * Note that the {@link #toString()} method is overridden and returns the exact value of REST resource
  *

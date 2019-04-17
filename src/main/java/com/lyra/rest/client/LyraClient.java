@@ -14,13 +14,14 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * This client component allows to interact with the Rest API of the Payment Platform.<p/>
+ * <p>
+ * This client component allows to interact with the Rest API of the Payment Platform.</p>
  * <p>
  * In order to configure this component, it is necessary to set the properties in a file called
- * lyra-client-configuration-default.properties. This file must exist in the classpath.<p/>
+ * lyra-client-configuration-default.properties. This file must exist in the classpath.</p>
  * <p>
  * It is possible, anyway, to set an specific configuration using the {@link LyraClientConfiguration} object
- * and its builder.<p/>
+ * and its builder.</p>
  * <p>
  * In case of error, a {@link LyraClientException} non-checked exception will be thrown, containing error details and the full stack.
  *
