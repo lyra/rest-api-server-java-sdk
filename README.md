@@ -95,8 +95,8 @@ This object implements a builder pattern that makes really easy to instantiate i
 
 Please note that: 
 
-* You can set a default configuration but file and just override specific values by _LyraClientConfigutation_ object.
-* The  LyraClientConfiguration will only change the configuration for the request. If you make another call 
+* You can set a default configuration file and just override specific values by _LyraClientConfigutation_ object.
+* The _LyraClientConfiguration_ will only change the configuration for the request. If you make another call 
 and you want to use the same configuration, you will have to pass again the object.
 
 For example, if you need to perform a post call with a different username/password: 
