@@ -1,6 +1,7 @@
 # REST API Client SDK 
 
 This SDK allows to call Rest API in order to invoke operations on the payment platform.
+For more information about the SDK server, please, refer to your service provider.
 
 ## Requirements
 
