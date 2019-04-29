@@ -1,6 +1,7 @@
-# Lyra REST API Client SDK 
+# REST API Client SDK 
 
-This SDK allows to call Lyra's Rest API in order to invoke operations on the payment platform.
+This SDK allows to call Rest API in order to invoke operations on the payment platform.
+For more information about the SDK server, please, refer to your service provider.
 
 ## Requirements
 
@@ -50,7 +51,7 @@ and set the right values:
 
 ### Perform an API call
 
-In order to call a REST resource from Lyra API you only need to call the _post_ method, indicating the target 
+In order to call a REST resource from the API, you only need to call the _post_ method, indicating the target 
 resource you want to target and the parameters.
 This is the signature of the method: 
 
