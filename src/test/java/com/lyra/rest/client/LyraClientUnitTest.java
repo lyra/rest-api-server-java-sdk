@@ -16,14 +16,14 @@ import java.util.Properties;
 
 @PrepareForTest(LyraClient.class)
 @RunWith(PowerMockRunner.class)
-public class LyraClientUnitTests {
+public class LyraClientUnitTest {
     private static final Integer TEST_AMOUNT = 100;
     private static final Integer TEST_CURRENCY = 100;
 
     private static final Integer HTTP_OK = 200;
     private static final Integer HTTP_ERROR = 500;
 
-    private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
+    private static final String RESPONSE_STATUS_SUCCESS = "ERROR";
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
     private static final String TEST_DOMAIN = "http://domain.com";
@@ -52,7 +52,7 @@ public class LyraClientUnitTests {
         parameters.put("domain", TEST_DOMAIN);
         String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
 
-        Map jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
+        Map<?, ?> jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
         Assert.assertEquals(RESPONSE_STATUS_SUCCESS, jsonResponse.get("status"));
     }
 
@@ -141,22 +141,21 @@ public class LyraClientUnitTests {
         String expected = "test/api-payment/" + LyraClient.REST_API_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
-        String domain = "";
 
-        domain = "toto";
+        configuration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "toto");
         String wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                domain, resource, configuration);
-        Assert.assertNotEquals(wrongUrl, expected);
+                resource, configuration);
+        Assert.assertNotEquals(expected, wrongUrl);
 
         resource = "Charge/testResource";
         wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                domain, resource, configuration);
-        Assert.assertNotEquals(wrongUrl, expected);
+                resource, configuration);
+        Assert.assertNotEquals(expected, wrongUrl);
 
-        domain = "test";
+        configuration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "test");
         String rightUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
-                domain, resource, configuration);
-        Assert.assertEquals(rightUrl, expected);
+                resource, configuration);
+        Assert.assertEquals(expected, rightUrl);
     }
 
     @Test(expected = LyraClientException.class)
@@ -174,7 +173,7 @@ public class LyraClientUnitTests {
         HttpURLConnection mockHttpURLConnection = Mockito.mock(HttpURLConnection.class);
         PowerMockito.when(mockHttpURLConnection.getResponseCode()).thenReturn(responseCode);
         PowerMockito.doReturn(mockHttpURLConnection)
-                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any(), Mockito.any());
+                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any());
         PowerMockito.doNothing()
                 .when(LyraClient.class, "sendRequestPayload", Mockito.any(), Mockito.any());
     }

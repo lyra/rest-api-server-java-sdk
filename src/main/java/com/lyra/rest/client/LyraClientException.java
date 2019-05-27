@@ -9,7 +9,12 @@ import lombok.Getter;
  */
 @Getter
 public class LyraClientException extends RuntimeException {
-    private int responseCode;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private int responseCode;
     private String responseMessage;
 
     public LyraClientException(String message) {
