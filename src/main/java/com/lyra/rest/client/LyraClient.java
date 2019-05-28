@@ -199,7 +199,7 @@ public class LyraClient {
     /*
     Generates the Url to call Rest API
      */
-    public static String generateChargeUrl(String resource, Map<String, String> configuration) {
+    private static String generateChargeUrl(String resource, Map<String, String> configuration) {
         return String.format("%s/api-payment/%s/%s", configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN),
                 REST_API_VERSION, resource);
     }

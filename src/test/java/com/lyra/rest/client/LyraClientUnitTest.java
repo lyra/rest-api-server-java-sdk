@@ -23,7 +23,7 @@ public class LyraClientUnitTest {
     private static final Integer HTTP_OK = 200;
     private static final Integer HTTP_ERROR = 500;
 
-    private static final String RESPONSE_STATUS_SUCCESS = "ERROR";
+    private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
     private static final String TEST_DOMAIN = "http://domain.com";
