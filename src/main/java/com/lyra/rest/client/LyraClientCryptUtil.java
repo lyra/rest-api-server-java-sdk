@@ -26,6 +26,9 @@ class LyraClientCryptUtil {
     static final String ALGORITHM_HMAC_SHA256 = "sha256_hmac";
     static final String[] SUPPORTED_ALGORITHMS = {ALGORITHM_HMAC_SHA256};
 
+    //Private constructor as all methods are static
+    private LyraClientCryptUtil() {}
+
 
     /**
      * Returns true if the provided algorithm is supported by this version of SDK
@@ -56,11 +59,12 @@ class LyraClientCryptUtil {
         try {
             src = src.replace("\\/", "/"); //Replace unwanted characters
 
-            byte messageBytes[] = src.getBytes(DEFAULT_CHARSET_NAME);
-            byte keyBytes[] = key.getBytes(DEFAULT_CHARSET_NAME);
+            byte[] messageBytes = src.getBytes(DEFAULT_CHARSET_NAME);
+            byte[] keyBytes = key.getBytes(DEFAULT_CHARSET_NAME);
 
             switch (algorithm) {
-                case "sha256_hmac":
+                case ALGORITHM_HMAC_SHA256:
+                    //Add new cases here
                 default:
                     return new String(encodeHex(getHashHmacSha256(keyBytes, messageBytes), DIGITS_LOWER));
             }
@@ -112,3 +116,4 @@ class LyraClientCryptUtil {
         return out;
     }
 }
+

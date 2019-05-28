@@ -2,11 +2,14 @@ package com.lyra.rest.client;
 
 import com.google.gson.Gson;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +61,10 @@ public class LyraClient {
         defaultConnectionTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
         defaultRequestTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
         defaultHashKey = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY);
+    }
+
+    //Private constructor as all methods are static
+    private LyraClient() {
     }
 
     /**
@@ -129,7 +136,6 @@ public class LyraClient {
     public static boolean verifyAnswer(Map<String, Object> paymentAnswer, LyraClientConfiguration requestConfiguration) {
         String answer = (String)paymentAnswer.get("kr-answer");
         String hashAlgorithm = (String) paymentAnswer.get("kr-hash-algorithm");
-        String answerHash = (String) paymentAnswer.get("kr-hash");
 
         if (!LyraClientCryptUtil.isAlgorithmSupported(hashAlgorithm)) {
             throw new LyraClientException("Signature algorithm not supported. Make sure you are using the last version of this SDK");
@@ -138,6 +144,8 @@ public class LyraClient {
         //Get configuration in order to retrieve the key to use
         Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
 
+        //Check hash
+        String answerHash = (String) paymentAnswer.get("kr-hash");
         return answerHash.equals(LyraClientCryptUtil.calculateHash(answer, configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY), hashAlgorithm));
     }
 
@@ -174,9 +182,7 @@ public class LyraClient {
         final Properties appConfigurationProperties = readConfigurationFile(APP_CONFIGURATION_FILE_NAME);
 
         //Override with configuration defined by application
-        appConfigurationProperties.forEach((k, v) -> {
-            finalConfigurationProperties.setProperty((String) k, (String) v);
-        });
+        appConfigurationProperties.forEach((k, v) -> finalConfigurationProperties.setProperty((String) k, (String) v));
 
         return finalConfigurationProperties;
     }
@@ -204,11 +210,20 @@ public class LyraClient {
                 REST_API_VERSION, resource);
     }
 
+    private static URL getURLToConnect (String resource, Map<String, String> configuration) throws MalformedURLException {
+        return new URL(generateChargeUrl(resource, configuration));
+    }
+
+    private static HttpURLConnection getConnection(URL url, Proxy proxy) throws IOException {
+        return (proxy != null) ? (HttpURLConnection) url.openConnection(proxy)
+                : (HttpURLConnection) url.openConnection();
+    }
+
     /*
     Creates the connection used to make a JSON based REST call
      */
     private static HttpURLConnection createConnection(String resource, Map<String, String> configuration) throws IOException {
-        URL urlToConnect = new URL(generateChargeUrl(resource, configuration));
+        URL urlToConnect = getURLToConnect(resource, configuration);
 
         //Set proxy if necessary
         Proxy proxy = null;
@@ -222,8 +237,7 @@ public class LyraClient {
         }
 
         //Create connection
-        HttpURLConnection connection = (proxy != null) ? (HttpURLConnection) urlToConnect.openConnection(proxy)
-                : (HttpURLConnection) urlToConnect.openConnection();
+        HttpURLConnection connection = getConnection(urlToConnect, proxy);
 
         //Add request headers
         connection.setRequestMethod("POST");
@@ -279,8 +293,11 @@ public class LyraClient {
                 (configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
     }
 
+    /*
+    Determine ig the proxy can be used
+    */
     private static boolean couldUseProxy(String proxyHost) {
-        return !(proxyHost == null) && !proxyHost.equals("localhost") && !proxyHost.equals("127.0.0.1");
+        return proxyHost != null && !"localhost".equals(proxyHost) && !"127.0.0.1".equals(proxyHost);
     }
 
 }
