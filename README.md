@@ -1,3 +1,5 @@
+![](https://img.shields.io/maven-central/v/com.lyra/server-rest-sdk.svg)
+
 # REST API Client SDK 
 
 This SDK allows to call Rest API in order to invoke operations on the payment platform.
