@@ -10,6 +10,7 @@ package com.lyra.rest.client;
  */
 public enum LyraClientResource {
     CREATE_PAYMENT("Charge/CreatePayment"),
+    CREATE_TOKEN("Charge/CreateToken"),
     SDK_TEST("Charge/SDKTest");
 
     private String value;
