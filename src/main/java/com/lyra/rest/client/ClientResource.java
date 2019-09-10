@@ -8,14 +8,14 @@ package com.lyra.rest.client;
  *
  * @author Lyra Network
  */
-public enum LyraClientResource {
+public enum ClientResource {
     CREATE_PAYMENT("Charge/CreatePayment"),
     CREATE_TOKEN("Charge/CreateToken"),
     SDK_TEST("Charge/SDKTest");
 
     private String value;
 
-    LyraClientResource(String value) {
+    ClientResource(String value) {
            this.value = value;
     }
 

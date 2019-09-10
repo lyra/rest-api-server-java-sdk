@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  * @author Lyra Network
  */
-class LyraClientCryptUtil {
+class ClientCryptUtil {
 
     /**
      * Used to build output as Hex
@@ -27,7 +27,7 @@ class LyraClientCryptUtil {
     static final String[] SUPPORTED_ALGORITHMS = {ALGORITHM_HMAC_SHA256};
 
     //Private constructor as all methods are static
-    private LyraClientCryptUtil() {}
+    private ClientCryptUtil() {}
 
 
     /**
@@ -50,9 +50,9 @@ class LyraClientCryptUtil {
     static String calculateHash(String src, String key, String algorithm) {
         //Verify null entries
         if (src == null) {
-            throw new LyraClientException("Provided message is null. It is impossible to generate the hash!");
+            throw new ClientException("Provided message is null. It is impossible to generate the hash!");
         } else if (key == null) {
-            throw new LyraClientException("Provided key is null. It is impossible to generate the hash without a key!");
+            throw new ClientException("Provided key is null. It is impossible to generate the hash without a key!");
         }
 
         //Proceed with hash generation
@@ -70,7 +70,7 @@ class LyraClientCryptUtil {
             }
 
         } catch (Exception e) {
-            throw new LyraClientException("Unexpected error generating message hash", e);
+            throw new ClientException("Unexpected error generating message hash", e);
         }
     }
 

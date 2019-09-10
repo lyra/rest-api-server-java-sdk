@@ -15,7 +15,7 @@ import lombok.Getter;
  */
 @Builder
 @Getter
-public class LyraClientConfiguration {
+public class ClientConfiguration {
     //Convenience constants used for comparing conditions
     public static final String CONFIGURATION_KEY_USERNAME = "username";
     public static final String CONFIGURATION_KEY_PASSWORD = "password";

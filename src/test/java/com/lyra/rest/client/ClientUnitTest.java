@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@PrepareForTest(LyraClient.class)
+@PrepareForTest(Client.class)
 @RunWith(PowerMockRunner.class)
-public class LyraClientUnitTest {
+public class ClientUnitTest {
     private static final Integer TEST_AMOUNT = 100;
     private static final Integer TEST_CURRENCY = 100;
 
@@ -28,7 +28,7 @@ public class LyraClientUnitTest {
 
     private static final String TEST_DOMAIN = "http://domain.com";
 
-    @Test(expected = LyraClientException.class)
+    @Test(expected = ClientException.class)
     public void Should_ThrowLyraClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
         mockPreparePayment(HTTP_ERROR);
 
@@ -36,7 +36,7 @@ public class LyraClientUnitTest {
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
         parameters.put("domain", TEST_DOMAIN);
-        LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
+        Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters);
     }
 
     @Test
@@ -44,22 +44,22 @@ public class LyraClientUnitTest {
         mockPreparePayment(HTTP_OK);
         PowerMockito.doReturn(String.format("{\"status\":\"%s\",\"answer\":{\"formToken\":\"%s\"}}"
                 , RESPONSE_STATUS_SUCCESS, TEST_FORM_TOKEN))
-                .when(LyraClient.class, "readResponseContent", Mockito.any());
+                .when(Client.class, "readResponseContent", Mockito.any());
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
         parameters.put("domain", TEST_DOMAIN);
-        String response = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
+        String response = Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters);
 
-        Map<?, ?> jsonResponse = LyraClient.GSON.fromJson(response, Map.class);
+        Map<?, ?> jsonResponse = Client.GSON.fromJson(response, Map.class);
         Assert.assertEquals(RESPONSE_STATUS_SUCCESS, jsonResponse.get("status"));
     }
 
     @Test
     public void Should_ReadCondigurationFromFile_When_CallReadConfiguration() throws Exception {
         Properties configurationProperties =
-                Whitebox.invokeMethod(LyraClient.class, "readDefaultConfiguration");
+                Whitebox.invokeMethod(Client.class, "readDefaultConfiguration");
 
         Assert.assertNotNull("Could not read configuration. It is null", configurationProperties);
         Assert.assertFalse("Could not read configuration. It is empty", configurationProperties.isEmpty());
@@ -68,7 +68,7 @@ public class LyraClientUnitTest {
 
     @Test
     public void Should_LoadConfiguration_When_UsingConfigurationBuilder() {
-        LyraClientConfiguration configuration = LyraClientConfiguration.builder()
+        ClientConfiguration configuration = ClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
                 .proxyHost("testBuilderProxyHost")
@@ -94,11 +94,11 @@ public class LyraClientUnitTest {
         String expectedConnectionTimeout = "testConnectionTimeout";
         String expectedRequestTimeout = "testRequestTimeout";
         Properties defaultConfigurationProperties =
-                Whitebox.invokeMethod(LyraClient.class, "readDefaultConfiguration");
-        LyraClientConfiguration.LyraClientConfigurationBuilder configurationBuilder = LyraClientConfiguration.builder();
+                Whitebox.invokeMethod(Client.class, "readDefaultConfiguration");
+        ClientConfiguration.ClientConfigurationBuilder configurationBuilder = ClientConfiguration.builder();
 
         Map<String, String> finalConfiguration = Whitebox.invokeMethod(
-                LyraClient.class, "getFinalConfiguration", configurationBuilder.build());
+                Client.class, "getFinalConfiguration", configurationBuilder.build());
         Assert.assertNotEquals(expectedUsername, finalConfiguration.get("username"));
         Assert.assertNotEquals(expectedPassword, finalConfiguration.get("password"));
         Assert.assertNotEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
@@ -112,7 +112,7 @@ public class LyraClientUnitTest {
         Assert.assertEquals(defaultConfigurationProperties.getProperty("connectionTimeout"), finalConfiguration.get("connectionTimeout"));
         Assert.assertEquals(defaultConfigurationProperties.getProperty("requestTimeout"), finalConfiguration.get("requestTimeout"));
 
-        LyraClientConfiguration rightConfiguration = configurationBuilder
+        ClientConfiguration rightConfiguration = configurationBuilder
                 .username(expectedUsername)
                 .password(expectedPassword)
                 .proxyHost(expectedProxyHost)
@@ -121,7 +121,7 @@ public class LyraClientUnitTest {
                 .requestTimeout(expectedRequestTimeout)
                 .build();
         finalConfiguration = Whitebox.invokeMethod(
-                LyraClient.class, "getFinalConfiguration", rightConfiguration);
+                Client.class, "getFinalConfiguration", rightConfiguration);
         Assert.assertEquals(expectedUsername, finalConfiguration.get("username"));
         Assert.assertEquals(expectedPassword, finalConfiguration.get("password"));
         Assert.assertEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
@@ -138,43 +138,43 @@ public class LyraClientUnitTest {
 
     @Test
     public void Should_GenerateUrl_WithGenerateChargeUrlMethod() throws Exception {
-        String expected = "test/api-payment/" + LyraClient.REST_API_VERSION + "/Charge/testResource";
+        String expected = "test/api-payment/" + Client.REST_API_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
-        configuration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "toto");
-        String wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "toto");
+        String wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
 
         resource = "Charge/testResource";
-        wrongUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
 
-        configuration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "test");
-        String rightUrl = Whitebox.invokeMethod(LyraClient.class, "generateChargeUrl",
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "test");
+        String rightUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertEquals(expected, rightUrl);
     }
 
-    @Test(expected = LyraClientException.class)
+    @Test(expected = ClientException.class)
     public void Should_ThrowLyraException_When_AlgorithmIsNotSupported() throws Exception {
         Map<String, Object> answer = new HashMap<>();
         answer.put("kr-answer", "The quick brown fox jumps over the lazy dog");
         answer.put("kr-hash-algorithm", "sha1");
         answer.put("kr-hash", "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
 
-        LyraClient.verifyAnswer(answer);
+        Client.verifyAnswer(answer);
     }
 
     private void mockPreparePayment(int responseCode) throws Exception {
-        PowerMockito.spy(LyraClient.class);
+        PowerMockito.spy(Client.class);
         HttpURLConnection mockHttpURLConnection = Mockito.mock(HttpURLConnection.class);
         PowerMockito.when(mockHttpURLConnection.getResponseCode()).thenReturn(responseCode);
         PowerMockito.doReturn(mockHttpURLConnection)
-                .when(LyraClient.class, "createConnection", Mockito.any(), Mockito.any());
+                .when(Client.class, "createConnection", Mockito.any(), Mockito.any());
         PowerMockito.doNothing()
-                .when(LyraClient.class, "sendRequestPayload", Mockito.any(), Mockito.any());
+                .when(Client.class, "sendRequestPayload", Mockito.any(), Mockito.any());
     }
 }

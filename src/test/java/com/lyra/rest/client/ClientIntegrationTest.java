@@ -1,12 +1,8 @@
 package com.lyra.rest.client;
 
-import com.lyra.rest.client.LyraClient;
-import com.lyra.rest.client.LyraClientResource;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -17,9 +13,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-@PrepareForTest(LyraClient.class)
+@PrepareForTest(Client.class)
 @RunWith(PowerMockRunner.class)
-public class LyraClientIntegrationTest {
+public class ClientIntegrationTest {
     private static final String TEST_USERNAME = "91335531";
     private static final String TEST_PWD = "testpassword_DEMOPRIVATEKEY23G4475zXZQ2UA5x7M";
     private static final String MOCKED_DOMAIN = "MOCKED_DOMAIN";
@@ -43,7 +39,7 @@ public class LyraClientIntegrationTest {
 
             String result = getPreparePaymentResponse(parameters);
 
-            Map<?, ?> jsonResult = LyraClient.GSON.fromJson(result, Map.class);
+            Map<?, ?> jsonResult = Client.GSON.fromJson(result, Map.class);
 
             Assert.assertEquals(RESPONSE_STATUS_SUCCESS, jsonResult.get("status"));
             Assert.assertNotNull(jsonResult.get("version"));
@@ -64,7 +60,7 @@ public class LyraClientIntegrationTest {
 
         String result = getPreparePaymentResponse(parameters);
 
-        Map<?, ?> jsonResult = LyraClient.GSON.fromJson(result, Map.class);
+        Map<?, ?> jsonResult = Client.GSON.fromJson(result, Map.class);
 
         Assert.assertEquals(RESPONSE_STATUS_ERROR, jsonResult.get("status"));
         Assert.assertNotNull(jsonResult.get("version"));
@@ -75,8 +71,8 @@ public class LyraClientIntegrationTest {
         Assert.assertNotNull(answer.get("errorMessage"));
     }
 
-    private LyraClientConfiguration prepareConfiguration() {
-        return LyraClientConfiguration.builder()
+    private ClientConfiguration prepareConfiguration() {
+        return ClientConfiguration.builder()
                 .username(TEST_USERNAME)
                 .password(TEST_PWD)
                 .endpointDomain(TEST_DOMAIN)
@@ -85,25 +81,25 @@ public class LyraClientIntegrationTest {
 
     private String getPreparePaymentResponse(Map<String, Object> parameters) throws Exception {
         if (MOCKED_DOMAIN.equals(parameters.get("domain"))) { //Mock mode
-            PowerMockito.spy(LyraClient.class);
+            PowerMockito.spy(Client.class);
             URL mockedURL = PowerMockito.mock(URL.class);
             HttpURLConnection mockedUrlConnection = PowerMockito.mock(HttpURLConnection.class);
             PowerMockito.when(mockedUrlConnection.getResponseCode()).thenReturn(200);
 
             PowerMockito.doReturn(mockedURL)
-                    .when(LyraClient.class, "getURLToConnect", Mockito.any(), Mockito.any());
+                    .when(Client.class, "getURLToConnect", Mockito.any(), Mockito.any());
             PowerMockito.doReturn(mockedUrlConnection)
-                    .when(LyraClient.class, "getConnection", Mockito.any(), Mockito.any());
-            PowerMockito.doNothing().when(LyraClient.class, "sendRequestPayload", Mockito.any(), Mockito.any());
+                    .when(Client.class, "getConnection", Mockito.any(), Mockito.any());
+            PowerMockito.doNothing().when(Client.class, "sendRequestPayload", Mockito.any(), Mockito.any());
             if (BAD_CURRENCY.equals(parameters.get("currency"))) {
                 PowerMockito.doReturn(MOCK_RESPONSE_KO)
-                        .when(LyraClient.class, "readResponseContent", Mockito.any());
+                        .when(Client.class, "readResponseContent", Mockito.any());
             } else {
                 PowerMockito.doReturn(MOCK_RESPONSE_OK)
-                        .when(LyraClient.class, "readResponseContent", Mockito.any());
+                        .when(Client.class, "readResponseContent", Mockito.any());
             }
         }
 
-        return LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
+        return Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters, prepareConfiguration());
     }
 }

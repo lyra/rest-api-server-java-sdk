@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.lyra</groupId>
    <artifactId>server-rest-sdk</artifactId>
-   <version>1.0.2</version>
+   <version>2.0.0</version>
    <name>Lyra REST API Client SDK</name>
    <description>This SDK allows to call Lyra's Rest API in order to invoke operations on the payment platform</description>
    <url>https://github.com/lyra/rest-api-server-java-sdk</url>
@@ -174,7 +174,7 @@
       <dependency>
          <groupId>org.projectlombok</groupId>
          <artifactId>lombok</artifactId>
-         <version>1.18.0</version>
+         <version>1.18.8</version>
          <scope>provided</scope>
       </dependency>
       <!-- Tests -->
@@ -187,19 +187,19 @@
       <dependency>
          <groupId>org.powermock</groupId>
          <artifactId>powermock-module-junit4</artifactId>
-         <version>1.6.4</version>
+         <version>1.7.4</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.powermock</groupId>
          <artifactId>powermock-api-mockito</artifactId>
-         <version>1.6.4</version>
+         <version>1.7.4</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.jacoco</groupId>
          <artifactId>org.jacoco.agent</artifactId>
-         <version>0.8.2</version>
+         <version>0.8.4</version>
          <classifier>runtime</classifier>
       </dependency>
    </dependencies>
