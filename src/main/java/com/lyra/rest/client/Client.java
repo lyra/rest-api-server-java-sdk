@@ -21,22 +21,22 @@ import java.util.stream.Collectors;
  * This client component allows to interact with the Rest API of the Payment Platform.</p>
  * <p>
  * In order to configure this component, it is necessary to set the properties in a file called
- * lyra-client-configuration-default.properties. This file must exist in the classpath.</p>
+ * api-client-configuration-default.properties. This file must exist in the classpath.</p>
  * <p>
- * It is possible, anyway, to set an specific configuration using the {@link LyraClientConfiguration} object
+ * It is possible, anyway, to set an specific configuration using the {@link ClientConfiguration} object
  * and its builder.</p>
  * <p>
- * In case of error, a {@link LyraClientException} non-checked exception will be thrown, containing error details and the full stack.
+ * In case of error, a {@link ClientException} non-checked exception will be thrown, containing error details and the full stack.
  *
  * @author Lyra Network
  */
-public class LyraClient {
+public class Client {
 
     protected static final String REST_API_VERSION = "V4";
     protected static final Gson GSON = new Gson();
     protected static final String ENCODING = "UTF-8";
-    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "lyra-client-configuration-default";
-    private static final String APP_CONFIGURATION_FILE_NAME = "lyra-client-configuration";
+    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "api-client-configuration-default";
+    private static final String APP_CONFIGURATION_FILE_NAME = "api-client-configuration";
 
     private static final int HTTP_RESPONSE_OK = 200;
 
@@ -53,42 +53,42 @@ public class LyraClient {
     static {
         Properties defaultConfiguration = readDefaultConfiguration();
 
-        defaultUsername = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME);
-        defaultPassword = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD);
-        defaultEndpointDomain = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN);
-        defaultProxyHost = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
-        defaultProxyPort = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
-        defaultConnectionTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
-        defaultRequestTimeout = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
-        defaultHashKey = defaultConfiguration.getProperty(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY);
+        defaultUsername = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_USERNAME);
+        defaultPassword = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PASSWORD);
+        defaultEndpointDomain = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN);
+        defaultProxyHost = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
+        defaultProxyPort = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
+        defaultConnectionTimeout = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
+        defaultRequestTimeout = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
+        defaultHashKey = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_HASH_KEY);
     }
 
     //Private constructor as all methods are static
-    private LyraClient() {
+    private Client() {
     }
 
     /**
      * Calls the payment platform using the REST API.
      *
-     * @param targetResource the resource to target. Use {@link LyraClientResource} enum to help defining this parameter
+     * @param targetResource the resource to target. Use {@link ClientResource} enum to help defining this parameter
      * @param parameters     Map that contains the parameters of the payment
      * @return {@link String} that contains the full response from API
-     * @throws LyraClientException exception if error processing the request
+     * @throws ClientException exception if error processing the request
      */
     public static String post(String targetResource, Map<String, Object> parameters) {
-        return post(targetResource, parameters, LyraClientConfiguration.builder().build());
+        return post(targetResource, parameters, ClientConfiguration.builder().build());
     }
 
     /**
      * Calls the payment platform using the REST API
      *
-     * @param targetResource       the resource to target. You can use {@link LyraClientResource} enum to help defining this parameter
+     * @param targetResource       the resource to target. You can use {@link ClientResource} enum to help defining this parameter
      * @param parameters           Map that contains the parameters of the payment
      * @param requestConfiguration Configuration object that overrides the default configuration for this request
      * @return {@link String} that contains the full response from API
-     * @throws LyraClientException exception if error processing the request
+     * @throws ClientException exception if error processing the request
      */
-    public static String post(String targetResource, Map<String, Object> parameters, LyraClientConfiguration requestConfiguration) {
+    public static String post(String targetResource, Map<String, Object> parameters, ClientConfiguration requestConfiguration) {
         String responseMessage = null;
         Map<String, String> configuration = getFinalConfiguration(requestConfiguration);
 
@@ -104,11 +104,11 @@ public class LyraClient {
                 responseMessage = readResponseContent(connection);
             } else {
                 //Generic server error case (404, 500, etc).
-                throw new LyraClientException("HTTP call to Payment Platform was not successful.", responseCode,
+                throw new ClientException("HTTP call to Payment Platform was not successful.", responseCode,
                         readResponseContent(connection));
             }
         } catch (IOException ioe) {
-            throw new LyraClientException("Exception calling payment platform server", ioe);
+            throw new ClientException("Exception calling payment platform server", ioe);
         }
 
         return responseMessage;
@@ -122,7 +122,7 @@ public class LyraClient {
      * @return true if the integrity of the answer is valid
      */
     public static boolean verifyAnswer(Map<String, Object> paymentAnswer) {
-        return verifyAnswer(paymentAnswer, LyraClientConfiguration.builder().build());
+        return verifyAnswer(paymentAnswer, ClientConfiguration.builder().build());
     }
 
     /**
@@ -133,12 +133,12 @@ public class LyraClient {
      * @param requestConfiguration configuration object that overrides the default configuration for this request
      * @return true if the integrity of the answer is valid
      */
-    public static boolean verifyAnswer(Map<String, Object> paymentAnswer, LyraClientConfiguration requestConfiguration) {
+    public static boolean verifyAnswer(Map<String, Object> paymentAnswer, ClientConfiguration requestConfiguration) {
         String answer = (String)paymentAnswer.get("kr-answer");
         String hashAlgorithm = (String) paymentAnswer.get("kr-hash-algorithm");
 
-        if (!LyraClientCryptUtil.isAlgorithmSupported(hashAlgorithm)) {
-            throw new LyraClientException("Signature algorithm not supported. Make sure you are using the last version of this SDK");
+        if (!ClientCryptUtil.isAlgorithmSupported(hashAlgorithm)) {
+            throw new ClientException("Signature algorithm not supported. Make sure you are using the last version of this SDK");
         }
 
         //Get configuration in order to retrieve the key to use
@@ -146,27 +146,27 @@ public class LyraClient {
 
         //Check hash
         String answerHash = (String) paymentAnswer.get("kr-hash");
-        return answerHash.equals(LyraClientCryptUtil.calculateHash(answer, configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY), hashAlgorithm));
+        return answerHash.equals(ClientCryptUtil.calculateHash(answer, configuration.get(ClientConfiguration.CONFIGURATION_KEY_HASH_KEY), hashAlgorithm));
     }
 
     /*
     This method calculates the configuration to use. It takes the default one and overrides it with the configuration
     passed as parameter
      */
-    private static Map<String, String> getFinalConfiguration(LyraClientConfiguration requestConfiguration) {
+    private static Map<String, String> getFinalConfiguration(ClientConfiguration requestConfiguration) {
         if (requestConfiguration == null) {
-            requestConfiguration = LyraClientConfiguration.builder().build();
+            requestConfiguration = ClientConfiguration.builder().build();
         }
 
         Map<String, String> finalConfiguration = new HashMap<>();
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getEndpointDomain() : defaultEndpointDomain);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT, requestConfiguration.getRequestTimeout() != null ? requestConfiguration.getRequestTimeout() : defaultRequestTimeout);
-        finalConfiguration.put(LyraClientConfiguration.CONFIGURATION_KEY_HASH_KEY, requestConfiguration.getHashKey() != null ? requestConfiguration.getHashKey() : defaultHashKey);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getEndpointDomain() : defaultEndpointDomain);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT, requestConfiguration.getRequestTimeout() != null ? requestConfiguration.getRequestTimeout() : defaultRequestTimeout);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_HASH_KEY, requestConfiguration.getHashKey() != null ? requestConfiguration.getHashKey() : defaultHashKey);
 
         return finalConfiguration;
     }
@@ -190,13 +190,13 @@ public class LyraClient {
     //Read configuration file using classloader
     private static Properties readConfigurationFile(String configurationFilename) {
         Properties props = new Properties();
-        try (InputStream input = LyraClient.class.getClassLoader()
+        try (InputStream input = Client.class.getClassLoader()
                 .getResourceAsStream(configurationFilename + ".properties")) {
             if (input != null) {
                 props.load(input);
             }
         } catch (IOException ioe) {
-            throw new LyraClientException("Could not read application configuration", ioe);
+            throw new ClientException("Could not read application configuration", ioe);
         }
 
         return props;
@@ -206,7 +206,7 @@ public class LyraClient {
     Generates the Url to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
-        return String.format("%s/api-payment/%s/%s", configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN),
+        return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN),
                 REST_API_VERSION, resource);
     }
 
@@ -228,8 +228,8 @@ public class LyraClient {
         //Set proxy if necessary
         Proxy proxy = null;
         if (couldUseProxy(urlToConnect.getHost())) {
-            String proxyServer = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
-            String proxyPort = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
+            String proxyServer = configuration.get(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
+            String proxyPort = configuration.get(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
 
             if ((proxyServer != null && !proxyServer.isEmpty()) && (proxyPort != null && !proxyPort.isEmpty())) {
                 proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyServer, Integer.parseInt(proxyPort)));
@@ -247,8 +247,8 @@ public class LyraClient {
         connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));
 
         //Set timeouts if necessary
-        String connectionTimeout = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
-        String requestTimeout = configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
+        String connectionTimeout = configuration.get(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
+        String requestTimeout = configuration.get(ClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
 
         if (connectionTimeout != null && !connectionTimeout.isEmpty()) {
             connection.setConnectTimeout(Integer.valueOf(connectionTimeout));
@@ -290,7 +290,7 @@ public class LyraClient {
      */
     private static String generateAuthorizationToken(Map<String, String> configuration) throws UnsupportedEncodingException {
         return Base64.getEncoder().encodeToString(
-                (configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(LyraClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
+                (configuration.get(ClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(ClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
     }
 
     /*

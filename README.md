@@ -19,7 +19,7 @@ For example, for Maven:
 		<dependency>
 			<groupId>com.lyra</groupId>
 			<artifactId>server-rest-sdk</artifactId>
-			<version>1.0.2</version>
+			<version>2.0.0</version>
 		</dependency>
 	</dependencies>
 
@@ -36,7 +36,7 @@ The first thing you have to do is to configure your client.
 
 #### Default configuration by file
 
-In order to do so, you can just create in your classpath a file called _lyra-client-configuration.properties_ 
+In order to do so, you can just create in your classpath a file called _api-client-configuration.properties_ 
 and set the right values: 
 
     #Merchant account parameters
@@ -58,13 +58,13 @@ resource you want to target and the parameters.
 This is the signature of the method: 
 
 ```java
-    public static String post(String targetResource, Map<String, Object> parameters) throws LyraClientException
+    public static String post(String targetResource, Map<String, Object> parameters) throws ClientException
 ```
 
-To facilitate the definition of targetResource you can use the LyraClientResource enum, that contains 
+To facilitate the definition of targetResource you can use the ClientResource enum, that contains 
 predefined resources and overrides toString().
 
-In the case of internal error the method will throw a LyraClientException, which is non checked 
+In the case of internal error the method will throw a ClientException, which is non checked 
 exception.
 
 The call parameters can be defined using a simple and flexible Map object.
@@ -76,7 +76,7 @@ This is an usage example:
     parameters.put("amount", 100);
     parameters.put("currency", 978);
     
-    String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters);
+    String result = Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters);
 ```
 
 ## Advanced usage
@@ -86,11 +86,11 @@ This is an usage example:
 You can easily override the default configuration when performing the call to the _post_ method.
 This can be very useful, for example, if you need to share this same SDK library with different client applications. 
 
-In order to do so, you have to create a LyraClientConfiguration object.
+In order to do so, you have to create a ClientConfiguration object.
 This object implements a builder pattern that makes really easy to instantiate it: 
 
 ```java
-    LyraClientConfiguration configuration = LyraClientConfiguration.builder()
+    ClientConfiguration configuration = ClientConfiguration.builder()
                 .username("usernameToOverride")
                 .password("passwordToOverride")
                 .build();
@@ -98,15 +98,15 @@ This object implements a builder pattern that makes really easy to instantiate i
 
 Please note that: 
 
-* You can set a default configuration file and just override specific values by _LyraClientConfigutation_ object.
-* The _LyraClientConfiguration_ will only change the configuration for the request. If you make another call 
+* You can set a default configuration file and just override specific values by _ClientConfigutation_ object.
+* The _ClientConfiguration_ will only change the configuration for the request. If you make another call 
 and you want to use the same configuration, you will have to pass again the object.
 
 For example, if you need to perform a post call with a different username/password: 
 
 ```java
-    String result = LyraClient.post(LyraClientResource.CREATE_PAYMENT.toString(), parameters, 
-            LyraClientConfiguration.builder().username("anotherUsername").password("anotherPassword").build);
+    String result = Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters, 
+            ClientConfiguration.builder().username("anotherUsername").password("anotherPassword").build);
 ```
 
 ## Download and compile

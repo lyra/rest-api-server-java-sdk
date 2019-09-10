@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Lyra Network
  */
 @Getter
-public class LyraClientException extends RuntimeException {
+public class ClientException extends RuntimeException {
     /**
 	 * 
 	 */
@@ -17,17 +17,17 @@ public class LyraClientException extends RuntimeException {
 	private int responseCode;
     private String responseMessage;
 
-    public LyraClientException(String message) {
+    public ClientException(String message) {
         super(message);
     }
 
-    public LyraClientException(String message, int responseCode, String responseMessage) {
+    public ClientException(String message, int responseCode, String responseMessage) {
         super(message);
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
     }
 
-    public LyraClientException(String message, Throwable cause) {
+    public ClientException(String message, Throwable cause) {
         super(message, cause);
     }
 }
