@@ -18,8 +18,8 @@ import java.util.Map;
 public class ClientIntegrationTest {
     private static final String TEST_USERNAME = "91335531";
     private static final String TEST_PWD = "testpassword_DEMOPRIVATEKEY23G4475zXZQ2UA5x7M";
-    private static final String MOCKED_DOMAIN = "MOCKED_DOMAIN";
-    private static final String TEST_DOMAIN = MOCKED_DOMAIN;
+    private static final String MOCKED_API_SERVER_NAME = "MOCKED_SERVER_NAME";
+    private static final String TEST_SERVER_NAME = MOCKED_API_SERVER_NAME;
 
     private static final String BAD_CURRENCY = "BAD";
 
@@ -35,7 +35,7 @@ public class ClientIntegrationTest {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("amount", 100);
             parameters.put("currency", "EUR");
-            parameters.put("domain", TEST_DOMAIN);
+            parameters.put("serverName", TEST_SERVER_NAME);
 
             String result = getPreparePaymentResponse(parameters);
 
@@ -56,7 +56,7 @@ public class ClientIntegrationTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
         parameters.put("currency", BAD_CURRENCY);
-        parameters.put("domain", TEST_DOMAIN);
+        parameters.put("serverName", TEST_SERVER_NAME);
 
         String result = getPreparePaymentResponse(parameters);
 
@@ -75,12 +75,12 @@ public class ClientIntegrationTest {
         return ClientConfiguration.builder()
                 .username(TEST_USERNAME)
                 .password(TEST_PWD)
-                .endpointDomain(TEST_DOMAIN)
+                .serverName(TEST_SERVER_NAME)
                 .build();
     }
 
     private String getPreparePaymentResponse(Map<String, Object> parameters) throws Exception {
-        if (MOCKED_DOMAIN.equals(parameters.get("domain"))) { //Mock mode
+        if (MOCKED_API_SERVER_NAME.equals(parameters.get("serverName"))) { //Mock mode
             PowerMockito.spy(Client.class);
             URL mockedURL = PowerMockito.mock(URL.class);
             HttpURLConnection mockedUrlConnection = PowerMockito.mock(HttpURLConnection.class);
