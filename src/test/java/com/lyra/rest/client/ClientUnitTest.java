@@ -26,16 +26,13 @@ public class ClientUnitTest {
     private static final String RESPONSE_STATUS_SUCCESS = "SUCCESS";
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
-    private static final String TEST_DOMAIN = "http://domain.com";
-
     @Test(expected = ClientException.class)
-    public void Should_ThrowLyraClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
+    public void Should_ThrowClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
         mockPreparePayment(HTTP_ERROR);
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
-        parameters.put("domain", TEST_DOMAIN);
         Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters);
     }
 
@@ -49,7 +46,6 @@ public class ClientUnitTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", TEST_AMOUNT);
         parameters.put("currency", TEST_CURRENCY);
-        parameters.put("domain", TEST_DOMAIN);
         String response = Client.post(ClientResource.CREATE_PAYMENT.toString(), parameters);
 
         Map<?, ?> jsonResponse = Client.GSON.fromJson(response, Map.class);
@@ -142,7 +138,7 @@ public class ClientUnitTest {
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
-        configuration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "toto");
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, "toto");
         String wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
@@ -152,7 +148,7 @@ public class ClientUnitTest {
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
 
-        configuration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, "test");
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, "test");
         String rightUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertEquals(expected, rightUrl);

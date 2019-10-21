@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.OutputStreamWriter;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class Client {
 
     protected static final String REST_API_VERSION = "V4";
     protected static final Gson GSON = new Gson();
-    protected static final String ENCODING = "UTF-8";
     private static final String DEFAULT_CONFIGURATION_FILE_NAME = "api-client-configuration-default";
     private static final String APP_CONFIGURATION_FILE_NAME = "api-client-configuration";
 
@@ -42,7 +42,7 @@ public class Client {
 
     private static String defaultUsername;
     private static String defaultPassword;
-    private static String defaultEndpointDomain;
+    private static String defaultServerName;
     private static String defaultProxyHost;
     private static String defaultProxyPort;
     private static String defaultConnectionTimeout;
@@ -55,7 +55,7 @@ public class Client {
 
         defaultUsername = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_USERNAME);
         defaultPassword = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PASSWORD);
-        defaultEndpointDomain = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN);
+        defaultServerName = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME);
         defaultProxyHost = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
         defaultProxyPort = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
         defaultConnectionTimeout = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
@@ -161,7 +161,7 @@ public class Client {
         Map<String, String> finalConfiguration = new HashMap<>();
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
-        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN, requestConfiguration.getEndpointDomain() != null ? requestConfiguration.getEndpointDomain() : defaultEndpointDomain);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, requestConfiguration.getServerName() != null ? requestConfiguration.getServerName() : defaultServerName);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
@@ -206,7 +206,7 @@ public class Client {
     Generates the Url to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
-        return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_ENDPOINT_DOMAIN),
+        return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME),
                 REST_API_VERSION, resource);
     }
 
@@ -242,7 +242,7 @@ public class Client {
         //Add request headers
         connection.setRequestMethod("POST");
         connection.setRequestProperty("User-Agent", "Mobile Client SDK " + REST_API_VERSION);
-        connection.setRequestProperty("Content-type", "application/json; charset=" + ENCODING);
+        connection.setRequestProperty("Content-type", "application/json; charset=" + StandardCharsets.UTF_8);
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));
 
@@ -251,10 +251,10 @@ public class Client {
         String requestTimeout = configuration.get(ClientConfiguration.CONFIGURATION_KEY_REQUEST_TIMEOUT);
 
         if (connectionTimeout != null && !connectionTimeout.isEmpty()) {
-            connection.setConnectTimeout(Integer.valueOf(connectionTimeout));
+            connection.setConnectTimeout(Integer.parseInt(connectionTimeout));
         }
         if (requestTimeout != null && !requestTimeout.isEmpty()) {
-            connection.setReadTimeout(Integer.valueOf(requestTimeout));
+            connection.setReadTimeout(Integer.parseInt(requestTimeout));
         }
 
         return connection;
@@ -266,7 +266,7 @@ public class Client {
     private static void sendRequestPayload(HttpURLConnection connection, String payload) throws IOException {
         // Send post request
         connection.setDoOutput(true);
-        try (OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream(), ENCODING)) {
+        try (OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)) {
             wr.write(payload);
             wr.flush();
         }
@@ -278,7 +278,7 @@ public class Client {
     private static String readResponseContent(HttpURLConnection connection) throws IOException {
         String responseMessage = "";
         if (connection != null && connection.getInputStream() != null) {
-            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream(), ENCODING))) {
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 responseMessage = buffer.lines().collect(Collectors.joining("\n"));
             }
         }
@@ -288,9 +288,9 @@ public class Client {
     /*
     Generates the string to send in basic authorization
      */
-    private static String generateAuthorizationToken(Map<String, String> configuration) throws UnsupportedEncodingException {
+    private static String generateAuthorizationToken(Map<String, String> configuration) {
         return Base64.getEncoder().encodeToString(
-                (configuration.get(ClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(ClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(ENCODING));
+                (configuration.get(ClientConfiguration.CONFIGURATION_KEY_USERNAME) + ":" + configuration.get(ClientConfiguration.CONFIGURATION_KEY_PASSWORD)).getBytes(StandardCharsets.UTF_8));
     }
 
     /*
