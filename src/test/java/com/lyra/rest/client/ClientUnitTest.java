@@ -138,7 +138,7 @@ public class ClientUnitTest {
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
-        configuration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, "toto");
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "toto");
         String wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
@@ -148,14 +148,14 @@ public class ClientUnitTest {
                 resource, configuration);
         Assert.assertNotEquals(expected, wrongUrl);
 
-        configuration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, "test");
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "test");
         String rightUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertEquals(expected, rightUrl);
     }
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowLyraException_When_AlgorithmIsNotSupported() throws Exception {
+    public void Should_ThrowClientException_When_AlgorithmIsNotSupported() throws Exception {
         Map<String, Object> answer = new HashMap<>();
         answer.put("kr-answer", "The quick brown fox jumps over the lazy dog");
         answer.put("kr-hash-algorithm", "sha1");

@@ -19,11 +19,11 @@ For example, for Maven:
 		<dependency>
 			<groupId>com.lyra</groupId>
 			<artifactId>server-rest-sdk</artifactId>
-			<version>2.1.0</version>
+			<version>2.2.0</version>
 		</dependency>
 	</dependencies>
 
-You can also directly download the JAR from this path and add it to your classpath: [https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.1.0/server-rest-sdk-2.1.0.jar](https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.1.0/server-rest-sdk-2.1.0.jar)
+You can also directly download the JAR from this path and add it to your classpath: [https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.2.0/server-rest-sdk-2.2.0.jar](https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.2.0/server-rest-sdk-2.2.0.jar)
 
 In this last case, you should make sure that you add also [Gson 2.8.6](https://github.com/google/gson) to your project 
 classpath. 

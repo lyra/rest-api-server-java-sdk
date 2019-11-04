@@ -35,7 +35,7 @@ public class ClientIntegrationTest {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("amount", 100);
             parameters.put("currency", "EUR");
-            parameters.put("serverName", TEST_SERVER_NAME);
+            parameters.put("restApiServerName", TEST_SERVER_NAME);
 
             String result = getPreparePaymentResponse(parameters);
 
@@ -56,7 +56,7 @@ public class ClientIntegrationTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
         parameters.put("currency", BAD_CURRENCY);
-        parameters.put("serverName", TEST_SERVER_NAME);
+        parameters.put("restApiServerName", TEST_SERVER_NAME);
 
         String result = getPreparePaymentResponse(parameters);
 
@@ -75,12 +75,12 @@ public class ClientIntegrationTest {
         return ClientConfiguration.builder()
                 .username(TEST_USERNAME)
                 .password(TEST_PWD)
-                .serverName(TEST_SERVER_NAME)
+                .restApiServerName(TEST_SERVER_NAME)
                 .build();
     }
 
     private String getPreparePaymentResponse(Map<String, Object> parameters) throws Exception {
-        if (MOCKED_API_SERVER_NAME.equals(parameters.get("serverName"))) { //Mock mode
+        if (MOCKED_API_SERVER_NAME.equals(parameters.get("restApiServerName"))) { //Mock mode
             PowerMockito.spy(Client.class);
             URL mockedURL = PowerMockito.mock(URL.class);
             HttpURLConnection mockedUrlConnection = PowerMockito.mock(HttpURLConnection.class);
