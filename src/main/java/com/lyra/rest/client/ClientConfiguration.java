@@ -19,7 +19,7 @@ public class ClientConfiguration {
     //Convenience constants used for comparing conditions
     public static final String CONFIGURATION_KEY_USERNAME = "username";
     public static final String CONFIGURATION_KEY_PASSWORD = "password";
-    public static final String CONFIGURATION_KEY_SERVER_NAME = "serverName";
+    public static final String CONFIGURATION_KEY_REST_API_SERVER_NAME = "restApiServerName";
     public static final String CONFIGURATION_KEY_PROXY_HOST = "proxyHost";
     public static final String CONFIGURATION_KEY_PROXY_PORT = "proxyPort";
     public static final String CONFIGURATION_KEY_CONNECTION_TIMEOUT = "connectionTimeout";
@@ -29,7 +29,7 @@ public class ClientConfiguration {
     //All bean elements
     private String username;
     private String password;
-    private String serverName;
+    private String restApiServerName;
     private String proxyHost;
     private String proxyPort;
     private String connectionTimeout;

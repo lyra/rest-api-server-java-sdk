@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.lyra</groupId>
    <artifactId>server-rest-sdk</artifactId>
-   <version>2.1.0</version>
+   <version>2.2.0</version>
    <name>Payment REST API Client SDK</name>
    <description>This SDK allows to call the Payment Rest API in order to invoke operations on the payment platform</description>
    <url>https://github.com/lyra/rest-api-server-java-sdk</url>

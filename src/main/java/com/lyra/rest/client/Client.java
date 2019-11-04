@@ -2,13 +2,7 @@ package com.lyra.rest.client;
 
 import com.google.gson.Gson;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.io.BufferedReader;
-import java.io.OutputStreamWriter;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -20,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * <p>
  * This client component allows to interact with the Rest API of the Payment Platform.</p>
- * <p>
+ * <p>L
  * In order to configure this component, it is necessary to set the properties in a file called
  * api-client-configuration-default.properties. This file must exist in the classpath.</p>
  * <p>
@@ -42,7 +36,7 @@ public class Client {
 
     private static String defaultUsername;
     private static String defaultPassword;
-    private static String defaultServerName;
+    private static String defaultRestApiServerName;
     private static String defaultProxyHost;
     private static String defaultProxyPort;
     private static String defaultConnectionTimeout;
@@ -55,7 +49,7 @@ public class Client {
 
         defaultUsername = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_USERNAME);
         defaultPassword = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PASSWORD);
-        defaultServerName = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME);
+        defaultRestApiServerName = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME);
         defaultProxyHost = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST);
         defaultProxyPort = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT);
         defaultConnectionTimeout = defaultConfiguration.getProperty(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
@@ -161,7 +155,7 @@ public class Client {
         Map<String, String> finalConfiguration = new HashMap<>();
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_USERNAME, requestConfiguration.getUsername() != null ? requestConfiguration.getUsername() : defaultUsername);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PASSWORD, requestConfiguration.getPassword() != null ? requestConfiguration.getPassword() : defaultPassword);
-        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME, requestConfiguration.getServerName() != null ? requestConfiguration.getServerName() : defaultServerName);
+        finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, requestConfiguration.getRestApiServerName() != null ? requestConfiguration.getRestApiServerName() : defaultRestApiServerName);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_HOST, requestConfiguration.getProxyHost() != null ? requestConfiguration.getProxyHost() : defaultProxyHost);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_PROXY_PORT, requestConfiguration.getProxyPort() != null ? requestConfiguration.getProxyPort() : defaultProxyPort);
         finalConfiguration.put(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT, requestConfiguration.getConnectionTimeout() != null ? requestConfiguration.getConnectionTimeout() : defaultConnectionTimeout);
@@ -206,7 +200,7 @@ public class Client {
     Generates the Url to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
-        return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_SERVER_NAME),
+        return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME),
                 REST_API_VERSION, resource);
     }
 
