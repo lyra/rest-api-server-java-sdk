@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @author Lyra Network
  */
-public class Client {
+public final class Client {
 
     protected static final String REST_API_VERSION = "V4";
     protected static final Gson GSON = new Gson();
@@ -136,7 +136,6 @@ public class Client {
      * @return true if the integrity of the answer is valid
      */
     public static boolean verifyAnswer(Map<String, Object> paymentAnswer, ClientConfiguration requestConfiguration) {
-        String answer = (String)paymentAnswer.get("kr-answer");
         String hashAlgorithm = (String) paymentAnswer.get("kr-hash-algorithm");
 
         if (!ClientCryptUtil.isAlgorithmSupported(hashAlgorithm)) {
@@ -148,6 +147,8 @@ public class Client {
 
         //Check hash
         String answerHash = (String) paymentAnswer.get("kr-hash");
+
+        String answer = (String)paymentAnswer.get("kr-answer");
         return answerHash.equals(ClientCryptUtil.calculateHash(answer, configuration.get(ClientConfiguration.CONFIGURATION_KEY_HASH_KEY), hashAlgorithm));
     }
 
@@ -205,17 +206,23 @@ public class Client {
     }
 
     /*
-    Generates the Url to call Rest API
+     * Generates the URL as String to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
         return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME),
                 REST_API_VERSION, resource);
     }
 
+    /**
+     * Generates the URL to call Rest API
+     */
     private static URL getURLToConnect (String resource, Map<String, String> configuration) throws MalformedURLException {
         return new URL(generateChargeUrl(resource, configuration));
     }
 
+    /**
+     * Generates the HttpURLConnection from the URL to call Rest API
+     */
     private static HttpURLConnection getConnection(URL url, Proxy proxy) throws IOException {
         return (proxy != null) ? (HttpURLConnection) url.openConnection(proxy)
                 : (HttpURLConnection) url.openConnection();

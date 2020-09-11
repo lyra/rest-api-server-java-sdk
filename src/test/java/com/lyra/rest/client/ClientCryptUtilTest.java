@@ -10,44 +10,44 @@ public class ClientCryptUtilTest {
     static String EMPTY_ANSWER_SIGNATURE = "a95c2b13d50d57858ff38e7abd76c39d644fd5d1cfdcc360e4c61f2fc48d4a5e";
 
     @Test
-    public void Should_ValidateSignature_When_ProvidedSignatureIsCorrect() {
+    public void testShouldValidateSignatureWhenProvidedSignatureIsCorrect() {
         String result = ClientCryptUtil.calculateHash(REAL_ANSWER, HASH_KEY, ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertEquals(REAL_SIGNATURE, result);
+        Assert.assertTrue("Signature not valid", REAL_SIGNATURE.equals(result));
     }
 
     @Test
-    public void Should_RefuseSignature_When_ProvidedSignatureIsInCorrect() {
+    public void testShouldRefuseSignatureWhenProvidedSignatureIsInCorrect() {
         String result = ClientCryptUtil.calculateHash("CHANGE_" + REAL_ANSWER, HASH_KEY, ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertNotEquals(REAL_SIGNATURE, result);
+        Assert.assertFalse("Signature must be refused", REAL_SIGNATURE.equals(result));
     }
 
     @Test
-    public void Should_ApplyDefaultAlgorithm_When_AlgorithmIsNotRecognized() {
+    public void testShouldApplyDefaultAlgorithmWhenAlgorithmIsNotRecognized() {
         String result = ClientCryptUtil.calculateHash(REAL_ANSWER, HASH_KEY, "sha256");
-        Assert.assertEquals(REAL_SIGNATURE, result);
+        Assert.assertTrue("Should apply default algorithm", REAL_SIGNATURE.equals(result));
     }
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowException_When_KeyIsEmpty() {
+    public void testShouldThrowExceptionWhenKeyIsEmpty() {
         String result = ClientCryptUtil.calculateHash(REAL_ANSWER, "", ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertEquals(REAL_SIGNATURE, result);
+        Assert.assertTrue("This code should not happen because exception must be thrown before", REAL_SIGNATURE ==  result);
     }
 
     @Test
-    public void Should_EncodeAnyway_When_AnswerIsEmpty() {
+    public void testShouldEncodeAnywayWhenAnswerIsEmpty() {
         String result = ClientCryptUtil.calculateHash("", HASH_KEY, ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertEquals(EMPTY_ANSWER_SIGNATURE, result);
+        Assert.assertTrue("Should encode anyway", EMPTY_ANSWER_SIGNATURE.equals(result));
     }
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowException_When_AnswerIsNull() {
+    public void testShouldThrowExceptionWhenAnswerIsNull() {
         String result = ClientCryptUtil.calculateHash(null, HASH_KEY, ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertEquals(EMPTY_ANSWER_SIGNATURE, result);
+        Assert.assertTrue("This code should not happen because exception must be thrown before", EMPTY_ANSWER_SIGNATURE == result);
     }
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowException_When_KeyIsNull() {
+    public void testShouldThrowExceptionWhenKeyIsNull() {
         String result = ClientCryptUtil.calculateHash(REAL_ANSWER, null, ClientCryptUtil.ALGORITHM_HMAC_SHA256);
-        Assert.assertEquals(EMPTY_ANSWER_SIGNATURE, result);
+        Assert.assertTrue("This code should not happen because exception must be thrown before", EMPTY_ANSWER_SIGNATURE == result);
     }
 }

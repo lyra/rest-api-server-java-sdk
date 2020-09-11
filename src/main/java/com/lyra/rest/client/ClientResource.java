@@ -19,6 +19,9 @@ public enum ClientResource {
            this.value = value;
     }
 
+    /**
+     * Returns the value of the ClientResource
+     */
     @Override
     public String toString() {
         return value;

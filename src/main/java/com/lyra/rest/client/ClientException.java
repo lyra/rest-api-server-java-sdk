@@ -10,23 +10,32 @@ import lombok.Getter;
 @Getter
 public class ClientException extends RuntimeException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 1L;
 	
-	private int responseCode;
+    private int responseCode;
     private String responseMessage;
 
+    /**
+     * Construct a ClientException from a message
+     */
     public ClientException(String message) {
         super(message);
     }
 
+    /**
+     * Construct a ClientException from a message, a responseCode and a responseMessage
+     */
     public ClientException(String message, int responseCode, String responseMessage) {
         super(message);
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
     }
 
+    /**
+     * Construct a ClientException from a message and a cause
+     */
     public ClientException(String message, Throwable cause) {
         super(message, cause);
     }

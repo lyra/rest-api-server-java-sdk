@@ -27,7 +27,7 @@ public class ClientUnitTest {
     private static final String TEST_FORM_TOKEN = "02NWE0MmU1ZDItZTNkMS00ODQ3LTkyMTAtZTJjZDA2NzQ0YWVlew0KCSJhb";
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowClientException_When_CallPreparePaymentBadReturnCode() throws Exception {
+    public void testShouldThrowClientExceptionWhenCallPreparePaymentBadReturnCode() throws Exception {
         mockPreparePayment(HTTP_ERROR);
 
         Map<String, Object> parameters = new HashMap<>();
@@ -37,7 +37,7 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void Should_ReturnOk_When_CallPreparePaymentWithGoodParams() throws Exception {
+    public void testShouldReturnOkWhenCallPreparePaymentWithGoodParams() throws Exception {
         mockPreparePayment(HTTP_OK);
         PowerMockito.doReturn(String.format("{\"status\":\"%s\",\"answer\":{\"formToken\":\"%s\"}}"
                 , RESPONSE_STATUS_SUCCESS, TEST_FORM_TOKEN))
@@ -53,7 +53,7 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void Should_ReadCondigurationFromFile_When_CallReadConfiguration() throws Exception {
+    public void testShouldReadCondigurationFromFileWhenCallReadConfiguration() throws Exception {
         Properties configurationProperties =
                 Whitebox.invokeMethod(Client.class, "readDefaultConfiguration");
 
@@ -63,7 +63,7 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void Should_LoadConfiguration_When_UsingConfigurationBuilder() {
+    public void testShouldLoadConfigurationWhenUsingConfigurationBuilder() {
         ClientConfiguration configuration = ClientConfiguration.builder()
                 .username("testBuilderUsername")
                 .password("testBuilderPassword")
@@ -73,16 +73,16 @@ public class ClientUnitTest {
                 .requestTimeout("testRequestTimeout")
                 .build();
 
-        Assert.assertEquals("testBuilderUsername", configuration.getUsername());
-        Assert.assertEquals("testBuilderPassword", configuration.getPassword());
-        Assert.assertEquals("testBuilderProxyHost", configuration.getProxyHost());
-        Assert.assertEquals("testBuilderProxyPort", configuration.getProxyPort());
-        Assert.assertEquals("testConnectionTimeout", configuration.getConnectionTimeout());
-        Assert.assertEquals("testRequestTimeout", configuration.getRequestTimeout());
+        Assert.assertTrue("configuration property is invalid", "testBuilderUsername" == configuration.getUsername());
+        Assert.assertTrue("configuration property is invalid", "testBuilderPassword" == configuration.getPassword());
+        Assert.assertTrue("configuration property is invalid", "testBuilderProxyHost" == configuration.getProxyHost());
+        Assert.assertTrue("configuration property is invalid", "testBuilderProxyPort" == configuration.getProxyPort());
+        Assert.assertTrue("configuration property is invalid", "testConnectionTimeout" == configuration.getConnectionTimeout());
+        Assert.assertTrue("configuration property is invalid", "testRequestTimeout" == configuration.getRequestTimeout());
     }
 
     @Test
-    public void Should_OverrideDefautConfiguration_WithConfigurationBuilder() throws Exception {
+    public void testShouldOverrideDefautConfigurationWithConfigurationBuilder() throws Exception {
         String expectedUsername = "testUsername";
         String expectedPassword = "testPassword";
         String expectedProxyHost = "testProxyHost";
@@ -95,18 +95,18 @@ public class ClientUnitTest {
 
         Map<String, String> finalConfiguration = Whitebox.invokeMethod(
                 Client.class, "getFinalConfiguration", configurationBuilder.build());
-        Assert.assertNotEquals(expectedUsername, finalConfiguration.get("username"));
-        Assert.assertNotEquals(expectedPassword, finalConfiguration.get("password"));
-        Assert.assertNotEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
-        Assert.assertNotEquals(expectedProxyPort, finalConfiguration.get("proxyPort"));
-        Assert.assertNotEquals(expectedConnectionTimeout, finalConfiguration.get("connectionTimeout"));
-        Assert.assertNotEquals(expectedRequestTimeout, finalConfiguration.get("requestTimeout"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("username"), finalConfiguration.get("username"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("password"), finalConfiguration.get("password"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("proxyHost"), finalConfiguration.get("proxyHost"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("proxyPort"), finalConfiguration.get("proxyPort"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("connectionTimeout"), finalConfiguration.get("connectionTimeout"));
-        Assert.assertEquals(defaultConfigurationProperties.getProperty("requestTimeout"), finalConfiguration.get("requestTimeout"));
+        Assert.assertFalse("property value not expected", expectedUsername == finalConfiguration.get("username"));
+        Assert.assertFalse("property value not expected", expectedPassword == finalConfiguration.get("password"));
+        Assert.assertFalse("property value not expected", expectedProxyHost == finalConfiguration.get("proxyHost"));
+        Assert.assertFalse("property value not expected", expectedProxyPort == finalConfiguration.get("proxyPort"));
+        Assert.assertFalse("property value not expected", expectedConnectionTimeout == finalConfiguration.get("connectionTimeout"));
+        Assert.assertFalse("property value not expected", expectedRequestTimeout == finalConfiguration.get("requestTimeout"));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("username").equals(finalConfiguration.get("username")));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("password").equals(finalConfiguration.get("password")));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("proxyHost").equals(finalConfiguration.get("proxyHost")));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("proxyPort").equals(finalConfiguration.get("proxyPort")));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("connectionTimeout").equals(finalConfiguration.get("connectionTimeout")));
+        Assert.assertTrue("property value not expected", defaultConfigurationProperties.getProperty("requestTimeout").equals(finalConfiguration.get("requestTimeout")));
 
         ClientConfiguration rightConfiguration = configurationBuilder
                 .username(expectedUsername)
@@ -118,22 +118,22 @@ public class ClientUnitTest {
                 .build();
         finalConfiguration = Whitebox.invokeMethod(
                 Client.class, "getFinalConfiguration", rightConfiguration);
-        Assert.assertEquals(expectedUsername, finalConfiguration.get("username"));
-        Assert.assertEquals(expectedPassword, finalConfiguration.get("password"));
-        Assert.assertEquals(expectedProxyHost, finalConfiguration.get("proxyHost"));
-        Assert.assertEquals(expectedProxyPort, finalConfiguration.get("proxyPort"));
-        Assert.assertEquals(expectedConnectionTimeout, finalConfiguration.get("connectionTimeout"));
-        Assert.assertEquals(expectedRequestTimeout, finalConfiguration.get("requestTimeout"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("username"), finalConfiguration.get("username"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("password"), finalConfiguration.get("password"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("proxyHost"), finalConfiguration.get("proxyHost"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("proxyPort"), finalConfiguration.get("proxyPort"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("connectionTimeout"), finalConfiguration.get("connectionTimeout"));
-        Assert.assertNotEquals(defaultConfigurationProperties.getProperty("requestTimeout"), finalConfiguration.get("requestTimeout"));
+        Assert.assertTrue("property value not expected", expectedUsername == finalConfiguration.get("username"));
+        Assert.assertTrue("property value not expected", expectedPassword == finalConfiguration.get("password"));
+        Assert.assertTrue("property value not expected", expectedProxyHost == finalConfiguration.get("proxyHost"));
+        Assert.assertTrue("property value not expected", expectedProxyPort == finalConfiguration.get("proxyPort"));
+        Assert.assertTrue("property value not expected", expectedConnectionTimeout == finalConfiguration.get("connectionTimeout"));
+        Assert.assertTrue("property value not expected", expectedRequestTimeout == finalConfiguration.get("requestTimeout"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("username") == finalConfiguration.get("username"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("password") == finalConfiguration.get("password"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("proxyHost") == finalConfiguration.get("proxyHost"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("proxyPort") == finalConfiguration.get("proxyPort"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("connectionTimeout") == finalConfiguration.get("connectionTimeout"));
+        Assert.assertFalse("property value not expected", defaultConfigurationProperties.getProperty("requestTimeout") == finalConfiguration.get("requestTimeout"));
     }
 
     @Test
-    public void Should_GenerateUrl_WithGenerateChargeUrlMethod() throws Exception {
+    public void testShouldGenerateUrlWithGenerateChargeUrlMethod() throws Exception {
         String expected = "test/api-payment/" + Client.REST_API_VERSION + "/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
@@ -141,21 +141,21 @@ public class ClientUnitTest {
         configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "toto");
         String wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
-        Assert.assertNotEquals(expected, wrongUrl);
+        Assert.assertFalse("URL not expected", expected == wrongUrl);
 
         resource = "Charge/testResource";
         wrongUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
-        Assert.assertNotEquals(expected, wrongUrl);
+        Assert.assertFalse("URL not expected", expected == wrongUrl);
 
         configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "test");
         String rightUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
-        Assert.assertEquals(expected, rightUrl);
+        Assert.assertTrue("URL not expected", expected.equals(rightUrl));
     }
 
     @Test(expected = ClientException.class)
-    public void Should_ThrowClientException_When_AlgorithmIsNotSupported() throws Exception {
+    public void testShouldThrowClientExceptionWhenAlgorithmIsNotSupported() throws Exception {
         Map<String, Object> answer = new HashMap<>();
         answer.put("kr-answer", "The quick brown fox jumps over the lazy dog");
         answer.put("kr-hash-algorithm", "sha1");

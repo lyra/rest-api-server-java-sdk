@@ -31,7 +31,7 @@ public class ClientIntegrationTest {
 
     @SuppressWarnings("unchecked")
 	@Test
-        public void Should_ReturnOk_When_CallPreparePayment() throws Exception {
+        public void testShouldReturnOkWhenCallPreparePayment() throws Exception {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("amount", 100);
             parameters.put("currency", "EUR");
@@ -52,7 +52,7 @@ public class ClientIntegrationTest {
 
     @SuppressWarnings("unchecked")
 	@Test
-    public void Should_ReturnError_When_CallPreparePaymentBadCurrency() throws Exception {
+    public void testShouldReturnErrorWhenCallPreparePaymentBadCurrency() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("amount", 100);
         parameters.put("currency", BAD_CURRENCY);

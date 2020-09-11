@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * This bean class encapsulates client configuration data. <p>
+ * This bean class encapsulates client configuration data.
  *
  * In order to facilitate object creation it implements a builder pattern.
  *
@@ -16,7 +16,9 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ClientConfiguration {
-    //Convenience constants used for comparing conditions
+    /**
+     * Convenience constants used for comparing conditions
+     */
     public static final String CONFIGURATION_KEY_USERNAME = "username";
     public static final String CONFIGURATION_KEY_PASSWORD = "password";
     public static final String CONFIGURATION_KEY_REST_API_SERVER_NAME = "restApiServerName";
@@ -26,7 +28,9 @@ public class ClientConfiguration {
     public static final String CONFIGURATION_KEY_REQUEST_TIMEOUT = "requestTimeout";
     public static final String CONFIGURATION_KEY_HASH_KEY = "hashKey";
 
-    //All bean elements
+    /**
+     * All bean elements
+     */
     private String username;
     private String password;
     private String restApiServerName;
