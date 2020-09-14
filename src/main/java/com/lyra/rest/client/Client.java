@@ -253,8 +253,7 @@ public final class Client {
         connection.setRequestProperty("User-Agent", "Mobile Client SDK " + REST_API_VERSION);
         connection.setRequestProperty("Content-type", "application/json; charset=" + StandardCharsets.UTF_8);
         connection.setRequestProperty("Accept", "application/json");
-        //NOSONAR
-        connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));
+        connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration)); //NOSONAR
 
         //Set timeouts if necessary
         String connectionTimeout = configuration.get(ClientConfiguration.CONFIGURATION_KEY_CONNECTION_TIMEOUT);
