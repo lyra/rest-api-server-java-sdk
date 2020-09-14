@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
  */
 public final class Client {
 
-    protected static final String REST_API_VERSION = "V4";
-    protected static final Gson GSON = new Gson();
+    static final String REST_API_VERSION = "V4";
+    static final Gson GSON = new Gson();
     private static final String DEFAULT_CONFIGURATION_FILE_NAME = "api-client-configuration-default";
     private static final String APP_CONFIGURATION_FILE_NAME = "api-client-configuration";
 
@@ -253,6 +253,7 @@ public final class Client {
         connection.setRequestProperty("User-Agent", "Mobile Client SDK " + REST_API_VERSION);
         connection.setRequestProperty("Content-type", "application/json; charset=" + StandardCharsets.UTF_8);
         connection.setRequestProperty("Accept", "application/json");
+        //NOSONAR
         connection.setRequestProperty("Authorization", "Basic " + generateAuthorizationToken(configuration));
 
         //Set timeouts if necessary
