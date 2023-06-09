@@ -112,6 +112,22 @@
    </build>
    <profiles>
       <profile>
+         <id>nexus</id>
+         <activation>
+            <activeByDefault>false</activeByDefault>
+         </activation>
+         <distributionManagement>
+            <snapshotRepository>
+               <id>nexus-snapshot</id>
+               <url>${nexus.base.url}/content/repositories/${maven.snapshots.repository}</url>
+            </snapshotRepository>
+            <repository>
+               <id>nexus-release</id>
+               <url>${nexus.base.url}/content/repositories/${maven.releases.repository}</url>
+            </repository>
+         </distributionManagement>	
+      </profile>	   
+      <profile>
          <id>ossrh</id>
          <activation>
             <activeByDefault>false</activeByDefault>
