@@ -114,16 +114,22 @@ For example, if you need to perform a post call with a different username/passwo
 
 ## Download and compile
 
-You can download the code source and compile using maven.
+Use JDK 17 or later and Maven to compile the source code. The generated SDK requires Java 17 or later at runtime.
 
     mvn clean install
+
+On macOS, you can explicitly select JDK 17 for the build:
+
+```sh
+JAVA_HOME=$(/usr/libexec/java_home -v 17) mvn clean install
+```
 
 Note that the project use [Lombok](https://projectlombok.org/), a library that automates and improves Java
 construction, avoiding boilerplate code. This means that maybe you will need to install a plugin in your IDE in order to support it.
 
 ## Publishing to Maven Central
 
-Use a full JDK 11 (including `javadoc`) to build this project. If Maven uses the internal Nexus mirror,
+Use a full JDK 17 (including `javadoc`) to build this project. If Maven uses the internal Nexus mirror,
 the JDK must trust the corporate certificate authorities.
 
 Publishing uses the `central` profile, which replaces the legacy `ossrh` profile.
