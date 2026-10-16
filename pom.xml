@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.lyra</groupId>
    <artifactId>server-rest-sdk</artifactId>
-   <version>2.3.0-SNAPSHOT</version>
+   <version>2.3.0</version>
    <name>Payment REST API Client SDK</name>
    <description>This SDK allows to call the Payment Rest API in order to invoke operations on the payment platform</description>
    <url>https://github.com/lyra/rest-api-server-java-sdk</url>
@@ -128,32 +128,16 @@
          </distributionManagement>	
       </profile>	   
       <profile>
-         <id>ossrh</id>
+         <id>central</id>
          <activation>
             <activeByDefault>false</activeByDefault>
          </activation>
-         <distributionManagement>
-            <snapshotRepository>
-               <id>ossrh</id>
-               <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            </snapshotRepository>
-            <repository>
-               <id>ossrh</id>
-               <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-            </repository>
-         </distributionManagement>
          <build>
             <plugins>
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-deploy-plugin</artifactId>
-                  <configuration>
-                     <skip>false</skip>
-                  </configuration>
-               </plugin>
-               <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
+                  <version>3.12.0</version>
                   <executions>
                      <execution>
                         <id>attach-javadocs</id>
@@ -166,6 +150,7 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-source-plugin</artifactId>
+                  <version>3.4.0</version>
                   <executions>
                      <execution>
                         <id>attach-sources</id>
@@ -178,6 +163,7 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-gpg-plugin</artifactId>
+                  <version>3.2.8</version>
                   <executions>
                      <execution>
                         <id>sign-artifacts</id>
@@ -189,18 +175,19 @@
                   </executions>
                </plugin>
                <plugin>
-                  <groupId>org.sonatype.plugins</groupId>
-                  <artifactId>nexus-staging-maven-plugin</artifactId>
+                  <groupId>org.sonatype.central</groupId>
+                  <artifactId>central-publishing-maven-plugin</artifactId>
+                  <version>0.12.0</version>
                   <extensions>true</extensions>
                   <configuration>
-                     <serverId>ossrh</serverId>
-                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                     <publishingServerId>central</publishingServerId>
+                     <autoPublish>false</autoPublish>
                   </configuration>
                </plugin>
                <plugin>
                   <groupId>org.sonatype.ossindex.maven</groupId>
                   <artifactId>ossindex-maven-plugin</artifactId>
+                  <version>3.2.0</version>
                   <executions>
                      <execution>
                         <id>audit-dependencies</id>
