@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public final class Client {
 
     static final String REST_API_VERSION = "V4";
+    static final String REST_API_VERSION_V4_1 = "V4.1";
     static final Gson GSON = new Gson();
     private static final String DEFAULT_CONFIGURATION_FILE_NAME = "api-client-configuration-default";
     private static final String APP_CONFIGURATION_FILE_NAME = "api-client-configuration";
@@ -209,8 +210,9 @@ public final class Client {
      * Generates the URL as String to call Rest API
      */
     private static String generateChargeUrl(String resource, Map<String, String> configuration) {
+        String version = ClientResource.CREATE_FUNDS_TRANSFER.toString().equals(resource) ? REST_API_VERSION_V4_1 : REST_API_VERSION;
         return String.format("%s/api-payment/%s/%s", configuration.get(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME),
-                REST_API_VERSION, resource);
+            version, resource);
     }
 
     /**

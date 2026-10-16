@@ -134,7 +134,7 @@ public class ClientUnitTest {
 
     @Test
     public void testShouldGenerateUrlWithGenerateChargeUrlMethod() throws Exception {
-        String expected = "test/api-payment/" + Client.REST_API_VERSION + "/Charge/testResource";
+        String expected = "test/api-payment/V4/Charge/testResource";
         Map<String, String> configuration = new HashMap<>();
         String resource = "";
 
@@ -152,6 +152,34 @@ public class ClientUnitTest {
         String rightUrl = Whitebox.invokeMethod(Client.class, "generateChargeUrl",
                 resource, configuration);
         Assert.assertTrue("URL not expected", expected.equals(rightUrl));
+    }
+
+    @Test
+    public void testShouldKeepExistingResourcesOnV4() throws Exception {
+        Map<String, String> configuration = new HashMap<>();
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "https://example.com");
+
+        Assert.assertEquals("Charge/CreatePayment", ClientResource.CREATE_PAYMENT.toString());
+        Assert.assertEquals("Charge/CreateToken", ClientResource.CREATE_TOKEN.toString());
+        Assert.assertEquals("Charge/SDKTest", ClientResource.SDK_TEST.toString());
+        Assert.assertEquals("https://example.com/api-payment/V4/Charge/CreatePayment",
+                Whitebox.<String>invokeMethod(Client.class, "generateChargeUrl", ClientResource.CREATE_PAYMENT.toString(), configuration));
+        Assert.assertEquals("https://example.com/api-payment/V4/Charge/CreateToken",
+                Whitebox.<String>invokeMethod(Client.class, "generateChargeUrl", ClientResource.CREATE_TOKEN.toString(), configuration));
+        Assert.assertEquals("https://example.com/api-payment/V4/Charge/SDKTest",
+                Whitebox.<String>invokeMethod(Client.class, "generateChargeUrl", ClientResource.SDK_TEST.toString(), configuration));
+    }
+
+    @Test
+    public void testShouldGenerateFundsTransferUrlWithV41() throws Exception {
+        Map<String, String> configuration = new HashMap<>();
+        configuration.put(ClientConfiguration.CONFIGURATION_KEY_REST_API_SERVER_NAME, "https://example.com");
+
+        Assert.assertEquals("FundsTransfer/Create", ClientResource.CREATE_FUNDS_TRANSFER.toString());
+        Assert.assertEquals("https://example.com/api-payment/V4.1/FundsTransfer/Create",
+                Whitebox.<String>invokeMethod(Client.class, "generateChargeUrl", ClientResource.CREATE_FUNDS_TRANSFER.toString(), configuration));
+        Assert.assertEquals("https://example.com/api-payment/V4.1/FundsTransfer/Create",
+                Whitebox.<String>invokeMethod(Client.class, "generateChargeUrl", "FundsTransfer/Create", configuration));
     }
 
     @Test(expected = ClientException.class)
