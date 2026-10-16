@@ -7,7 +7,7 @@ For more information about the SDK server, please, refer to your service provide
 
 ## Requirements
 
-Java 8 or higher is required to use this library.
+Java 17 or higher is required to use this library.
 
 ## Installation
 
@@ -19,13 +19,13 @@ For example, for Maven:
         <dependency>
             <groupId>com.lyra</groupId>
             <artifactId>server-rest-sdk</artifactId>
-            <version>2.3.0</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
-You can also directly download the JAR from this path and add it to your classpath: [https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.3.0/server-rest-sdk-2.3.0.jar](https://github.com/lyra/rest-api-server-java-sdk/releases/download/v2.3.0/server-rest-sdk-2.3.0.jar)
+You can also directly download the JAR from this path and add it to your classpath: [https://github.com/lyra/rest-api-server-java-sdk/releases/download/v3.0.0/server-rest-sdk-3.0.0.jar](https://github.com/lyra/rest-api-server-java-sdk/releases/download/v3.0.0/server-rest-sdk-3.0.0.jar)
 
-In this last case, you should make sure that you add also [Gson 2.8.6](https://github.com/google/gson) to your project
+In this last case, you should make sure that you add also [Gson 2.14.0](https://github.com/google/gson) to your project
 classpath.
 
 ## Basic Usage
