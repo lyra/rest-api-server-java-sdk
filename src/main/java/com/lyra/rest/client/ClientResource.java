@@ -9,6 +9,7 @@ package com.lyra.rest.client;
  * @author Lyra Network
  */
 public enum ClientResource {
+    CREATE_FUNDS_TRANSFER("FundsTransfer/Create"),
     CREATE_PAYMENT("Charge/CreatePayment"),
     CREATE_TOKEN("Charge/CreateToken"),
     SDK_TEST("Charge/SDKTest");
